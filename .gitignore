@@ -1,0 +1,10 @@
+dist/
+build/
+coverage
+node_modules/
+yarn.lock
+.DS_Store
+lib
+.idea
+.vscode/
+.husky/
