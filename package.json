@@ -4,7 +4,8 @@
   "description": "FeatureProbe Server Side SDK for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --no-cache --runInBand",
+    "test:cov": "jest --coverage --no-cache --runInBand",
     "lint": "eslint ./"
   },
   "repository": {

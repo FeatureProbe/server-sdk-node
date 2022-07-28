@@ -1,8 +1,6 @@
 import { FPUser } from './FPUser';
 
-export interface FeatureProbe {
-  
-};
+export interface FeatureProbe {};
 
 export interface FPToggleDetail {
   value: boolean | string | number | object;
@@ -12,11 +10,10 @@ export interface FPToggleDetail {
   reason: string;
 }
 
-export interface IOption {
+export interface FPConfig {
   remoteUrl?: string;
   togglesUrl?: string;
   eventsUrl?: string;
   clientSdkKey: string;
   user: FPUser;
-  refreshInterval?: number;
 }
