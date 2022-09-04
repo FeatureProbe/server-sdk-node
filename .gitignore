@@ -1,4 +1,4 @@
-node_modules
+node_modules/
 .DS_Store
 typings
 
@@ -6,4 +6,7 @@ typings
 logs
 *.log
 
-.vscode
+.vscode/
+.idea/
+
+coverage/

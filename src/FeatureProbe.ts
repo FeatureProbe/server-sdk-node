@@ -3,18 +3,20 @@ import { FPToggleDetail, FPConfig } from './type';
 
 export default class FeatureProbe {
   constructor({
-    remoteUrl,
-    togglesUrl,
-    eventsUrl,
-    clientSdkKey,
-    user,
-  }: FPConfig) {
-    
+                remoteUrl,
+                togglesUrl,
+                eventsUrl,
+                clientSdkKey,
+                user,
+              }: FPConfig) {
+
   }
 
-  public async start() {}
+  public async start() {
+  }
 
-  public stop() {}
+  public stop() {
+  }
 
   public boolValue(key: string, defaultValue: boolean): boolean {
     return this.toggleValue(key, defaultValue, 'boolean') as boolean;
@@ -49,13 +51,13 @@ export default class FeatureProbe {
   }
 
   private toggleValue(key: string, defaultValue: any, valueType: string): any {
-    
+
   }
 
   private toggleDetail(
-    key: string,
-    defaultValue: any,
-    valueType: string
+      key: string,
+      defaultValue: any,
+      valueType: string
   ): any {
 
   }

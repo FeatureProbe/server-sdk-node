@@ -1,32 +1,40 @@
 export class FPUser {
-  private key: string;
-  private attrs: { [key: string]: string };
 
-  constructor(key: string) {
-    this.key = key;
-    this.attrs = {};
+  private _key: string;
+  private readonly _attrs: { [key: string]: string };
+
+  constructor() {
+    this._key = Date.now().toString();
+    this._attrs = {};
   }
 
-  public with(attrName: string, attrValue: string): FPUser {
-    this.attrs[attrName] = attrValue;
+  get key(): string {
+    return this._key;
+  }
+
+  get attrs(): { [key: string]: string } {
+    return Object.assign({}, this._attrs);
+  }
+
+  public stableRollout(key: string): FPUser {
+    this._key = key;
     return this;
   }
 
-  public getKey(): string {
-    return this.key;
+  public with(attrName: string, attrValue: string): FPUser {
+    this._attrs[attrName] = attrValue;
+    return this;
   }
 
-  public getAttrs(): { [key: string]: string } {
-    return Object.assign({}, this.attrs);
-  }
-
-  public extendAttrs(attrs: { [key: string]: string }) {
-    for (let key in attrs) {
-      this.attrs[key] = attrs[key];
+  public extendAttrs(attrs: { [key: string]: string }): FPUser {
+    for (const key in attrs) {
+      this._attrs[key] = attrs[key];
     }
+    return this;
   }
 
-  public get(attrName: string): string | undefined {
-    return this.attrs[attrName];
+  public getAttr(attrName: string): string | undefined {
+    return this._attrs[attrName];
   }
+
 }
