@@ -10,3 +10,5 @@ logs
 .idea/
 
 coverage/
+
+dist/

@@ -1,3 +1,3 @@
-test('FeatureProbe test one', () => {
-  expect(true);
+test("FeatureProbe test one", () => {
+
 });

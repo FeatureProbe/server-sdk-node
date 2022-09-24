@@ -33,7 +33,7 @@ export class FPUser {
     return this;
   }
 
-  public getAttr(attrName: string): string | undefined {
+  getAttr(attrName: string): string | undefined {
     return this._attrs[attrName];
   }
 
