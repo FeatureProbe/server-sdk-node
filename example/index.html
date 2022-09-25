@@ -15,7 +15,9 @@
           color: #556ee6;
       }
   </style>
-  <script type="text/javascript" src="featureprobe-server-sdk-node.min.js"></script>
+  <script>var exports = {};</script>
+<!--  <script type="module" src="../dist/src/index.js"></script>-->
+  <script type="text/javascript" src="../dist/featureprobe-server-sdk-node.min.js"></script>
 </head>
 
 <body>
@@ -74,7 +76,6 @@
   const fpClient = new featureProbe.FeatureProbe({
     remoteUrl: "https://featureprobe.io/server",
     clientSdkKey: "client-25614c7e03e9cb49c0e96357b797b1e47e7f2dff",
-    user,
     refreshInterval: 5000,
   });
 

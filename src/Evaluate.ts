@@ -1,12 +1,17 @@
 "use strict";
 
-// import { createHash } from "crypto";
-// import { SemVer } from "semver";
+import { createHash } from "crypto";
+import { SemVer } from "semver";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const SemVer = require("semver");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const createHash = require("crypto");
+// import ch from "crypto";
+// import sv from "semver";
+// const {createHash} = ch;
+// const {SemVer}=sv;
+
+// // eslint-disable-next-line @typescript-eslint/no-var-requires
+// const SemVer = require("semver");
+// // eslint-disable-next-line @typescript-eslint/no-var-requires
+// const createHash = require("crypto");
 
 import { FPUser } from "./FPUser";
 
@@ -524,8 +529,8 @@ export class Condition {
   };
 
   private static readonly SemverPredicate: {
-    [key: string]: (customValue: typeof SemVer, objects: string[]) => boolean
-    // [key: string]: (customValue: SemVer, objects: string[]) => boolean
+    [key: string]: (customValue: SemVer, objects: string[]) => boolean
+    // [key: string]: (customValue: typeof SemVer, objects: string[]) => boolean
   } = {
     "=": (cv, objects) => objects.some(o => cv.compare(o) === 0),
     "!=": (cv, objects) => !objects.some(o => cv.compare(o) === 0),

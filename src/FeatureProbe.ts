@@ -52,11 +52,10 @@ export class FeatureProbe {
     this._repository = new Repository({});
     this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval);
     this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository);
-    this.start();
   }
 
-  private start() {
-    ( async () => await this._toggleSyncer.start() )();
+  public async start() {
+    await this._toggleSyncer.start();
   }
 
   public async close() {
@@ -102,7 +101,7 @@ export class FeatureProbe {
   }
 
   private toggleDetail(key: string, user: FPUser, defaultValue: any, valueType: ToggleValueType): FPToggleDetail {
-    if (!this._repository?.initialized) {
+    if (!this._repository.initialized) {
       return {
         value: defaultValue,
         ruleIndex: null,

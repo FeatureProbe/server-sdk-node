@@ -19,7 +19,8 @@ export default {
     resolve({}),
     commonjs({
       namedExports: {
-        "node_modules/semver/semver.js": ["SemVer"]
+        // "node_modules/semver/semver.js": ["SemVer"],
+        // "node_modules/semver/semver.js": ["SemVer"]
       },
       include: "node_modules/**"
     }),

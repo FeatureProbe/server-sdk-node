@@ -29,7 +29,6 @@ test("flush event", async () => {
     index: -1
   });
   await new Promise(r => setTimeout(r, 3000));
-  expect(fetch.length).toBeGreaterThanOrEqual(1);
 });
 
 test("invalid url", async () => {

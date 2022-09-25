@@ -1,2 +1,4 @@
-export * from "./FeatureProbe";
-export * from "./FPUser";
+import { FeatureProbe } from "./FeatureProbe";
+import { FPUser } from "./FPUser";
+
+export { FeatureProbe, FPUser };

@@ -12,6 +12,6 @@ module.exports = {
       tsconfig: "tsconfig.json"
     }
   },
-  setupFiles: ["./setupJest.js"],
+  setupFiles: ["./jest.setup.js"],
   testEnvironment: "jsdom"
 };

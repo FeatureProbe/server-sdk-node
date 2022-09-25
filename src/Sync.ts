@@ -89,7 +89,7 @@ export class Synchronizer {
       }
     })
       .then(resp => {
-        // logger.debug(resp.status, "Http response");
+        // logger.debug(`Http response: ${resp.status}`);
         return resp.json();
       })
       .then(json => {
@@ -98,10 +98,10 @@ export class Synchronizer {
         latestRepo.initialized = true;
         latestRepo.updatedTimestamp = Date.now();
         Object.assign(this._repository, latestRepo);
-      });
-      // .catch(err => {
+      })
+      .catch(err => {
       //   logger.error(err, "Error fetching remote repository");
-      // });
+      });
   }
 
 }
