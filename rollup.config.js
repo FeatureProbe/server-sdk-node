@@ -4,28 +4,27 @@ import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import nodePolyfills from "rollup-plugin-node-polyfills";
 import json from "@rollup/plugin-json";
+import builtins from "rollup-plugin-node-builtins";
 
 export default {
   input: "./src/index.ts",
   output: [
     {
       file: "./dist/featureprobe-server-sdk-node.min.js",
-      format: "iife",
+      format: "cjs",
       name: "featureProbe"
     }
   ],
   plugins: [
     nodePolyfills(),
-    resolve({}),
-    commonjs({
-      namedExports: {
-        // "node_modules/semver/semver.js": ["SemVer"],
-        // "node_modules/semver/semver.js": ["SemVer"]
-      },
-      include: "node_modules/**"
-    }),
     typescript({ tsconfigOverride: { compilerOptions: { module: "ES2015" } } }),
-    minify({ comments: false }),
-    json()
+    builtins({ crypto: false }),
+    resolve({ browser: true }),
+    commonjs({ include: "node_modules/**" }),
+    json(),
+    minify({ comments: false })
+  ],
+  external: [
+    "crypto"
   ]
 };

@@ -1,3 +1,5 @@
+"use strict";
+
 export class FPUser {
 
   private _key: string;
@@ -36,5 +38,4 @@ export class FPUser {
   getAttr(attrName: string): string | undefined {
     return this._attrs[attrName];
   }
-
 }

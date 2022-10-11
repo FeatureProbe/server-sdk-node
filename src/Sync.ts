@@ -1,9 +1,8 @@
 // "use strict";
 
-import "whatwg-fetch";
-// import { TinyEmitter } from "tiny-emitter";
 // import { pino } from "pino";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Repository } from "./Evaluate";
 
 import pkg from "../package.json";
@@ -79,29 +78,34 @@ export class Synchronizer {
   }
 
   private async fetchRemoteRepo(): Promise<void> {
-    await fetch(this._togglesUrl, {
-      method: "GET",
-      cache: "no-cache",
-      headers: {
-        Authorization: this._serverSdkKey,
-        "Content-Type": "application/json",
-        UA: UA
-      }
-    })
-      .then(resp => {
-        // logger.debug(`Http response: ${resp.status}`);
-        return resp.json();
-      })
-      .then(json => {
-        // logger.debug(json, "Http response body");
-        const latestRepo = new Repository(json);
-        latestRepo.initialized = true;
-        latestRepo.updatedTimestamp = Date.now();
-        Object.assign(this._repository, latestRepo);
-      })
-      .catch(err => {
-      //   logger.error(err, "Error fetching remote repository");
-      });
+    // await fetch(this._togglesUrl, {
+    //   method: "GET",
+    //   cache: "no-cache",
+    //   headers: {
+    //     Authorization: this._serverSdkKey,
+    //     "Content-Type": "application/json",
+    //     UA: UA
+    //   }
+    // })
+    // await axios.get(this._togglesUrl, {
+    //   headers: {
+    //     Authorization: this._serverSdkKey,
+    //     "Content-Type": "application/json",
+    //     "User-Agent": UA,
+    //     "Access-Control-Allow-Origin": "*",
+    //     "Access-Control-Allow-Methods" : "GET,POST"
+    //   }
+    // })
+    //   .then((resp: AxiosResponse<any>) => {
+    //     // logger.debug(`Http response: ${resp.status}`);
+    //     const json = resp.data.json;
+    //     // logger.debug(json, "Http response body");
+    //     const latestRepo = new Repository(json);
+    //     latestRepo.initialized = true;
+    //     latestRepo.updatedTimestamp = Date.now();
+    //     Object.assign(this._repository, latestRepo);
+    //   })
+    //   .catch((e:any)=>console.log(e));
   }
 
 }

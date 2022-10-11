@@ -1,19 +1,12 @@
 "use strict";
 
-import { createHash } from "crypto";
-import { SemVer } from "semver";
-
-// import ch from "crypto";
-// import sv from "semver";
-// const {createHash} = ch;
-// const {SemVer}=sv;
-
-// // eslint-disable-next-line @typescript-eslint/no-var-requires
-// const SemVer = require("semver");
-// // eslint-disable-next-line @typescript-eslint/no-var-requires
-// const createHash = require("crypto");
-
+import { FPToggleDetail } from "./type";
 import { FPUser } from "./FPUser";
+
+import { createHash } from "crypto";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const SemVer = require("semver/classes/semver");
+
 
 const Defaults = {
   Split: {
@@ -50,7 +43,6 @@ export class Repository {
 
   get segments(): { [key: string]: Segment } {
     return this._segments;
-    // return Object.assign({}, this._segments);
   }
 
   set segments(value: { [p: string]: Segment }) {
@@ -98,8 +90,8 @@ export class Toggle {
     this._enabled = json.enabled || false;
     this._version = json.version || 1;
     this._forClient = json.forClient || false;
-    this._disabledServe = json.disabledServe === undefined ? null : new Serve(json.disabledServe);
-    this._defaultServe = json.defaultServe === undefined ? null : new Serve(json.defaultServe);
+    this._disabledServe = json.disabledServe ? null : new Serve(json.disabledServe);
+    this._defaultServe = json.defaultServe ? null : new Serve(json.defaultServe);
     this._rules = [];
     for (const r of json.rules || []) {
       this._rules.push(new Rule(r));
@@ -171,7 +163,7 @@ export class Toggle {
     this._variations = value;
   }
 
-  public eval(user: FPUser, segments: { [key: string]: Segment }, defaultValue: any): IEvalResult {
+  public eval(user: FPUser, segments: { [key: string]: Segment }, defaultValue: any): FPToggleDetail {
     if (!this._enabled) {
       return this.disabledResult(user, this._key, defaultValue);
     }
@@ -189,14 +181,14 @@ export class Toggle {
     return this.defaultResult(user, this._key, defaultValue, warning);
   }
 
-  private hitValue(hitResult: IHitResult | undefined, defaultValue: any, ruleIndex?: number): IEvalResult {
+  private hitValue(hitResult: IHitResult | undefined, defaultValue: any, ruleIndex?: number): FPToggleDetail {
     const res = {
       value: defaultValue,
-      ruleIndex: ruleIndex,
-      variationIndex: hitResult?.index,
+      ruleIndex: ruleIndex || null,
+      variationIndex: hitResult?.index || null,
       version: this._version,
-      reason: hitResult?.reason
-    } as IEvalResult;
+      reason: hitResult?.reason || null
+    } as FPToggleDetail;
 
     if (hitResult?.index !== undefined) {
       res.value = this._variations[hitResult.index];
@@ -207,25 +199,17 @@ export class Toggle {
     return res;
   }
 
-  private disabledResult(user: FPUser, toggleKey: string, defaultValue: any): IEvalResult {
+  private disabledResult(user: FPUser, toggleKey: string, defaultValue: any): FPToggleDetail {
     const disabledResult = this.hitValue(this._disabledServe?.evalIndex(user, toggleKey), defaultValue);
     disabledResult.reason = "Toggle disabled";
     return disabledResult;
   }
 
-  private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string): IEvalResult {
+  private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string): FPToggleDetail {
     const defaultResult = this.hitValue(this._defaultServe?.evalIndex(user, toggleKey), defaultValue);
     defaultResult.reason = `Default rule hit. ${warning ?? ""}`.trimEnd();
     return defaultResult;
   }
-}
-
-interface IEvalResult {
-  value: any;
-  ruleIndex?: number;
-  variationIndex?: number;
-  version: number;
-  reason: string;
 }
 
 class Segment {
@@ -312,7 +296,7 @@ class Serve {
   }
 
   public evalIndex(user: FPUser, toggleKey: string): IHitResult {
-    if (this._select !== null) {
+    if (this._select) {
       return {
         hit: true,
         index: this._select
@@ -529,8 +513,7 @@ export class Condition {
   };
 
   private static readonly SemverPredicate: {
-    [key: string]: (customValue: SemVer, objects: string[]) => boolean
-    // [key: string]: (customValue: typeof SemVer, objects: string[]) => boolean
+    [key: string]: (customValue: typeof SemVer, objects: string[]) => boolean
   } = {
     "=": (cv, objects) => objects.some(o => cv.compare(o) === 0),
     "!=": (cv, objects) => !objects.some(o => cv.compare(o) === 0),

@@ -1,4 +1,5 @@
 export interface FPUser {
+
   key: string;
   attrs: { [key: string]: string };
 
@@ -10,6 +11,8 @@ export interface FPUser {
 }
 
 export interface FeatureProbe {
+  start(): void;
+
   close(): void;
 
   flush(): void;
@@ -32,11 +35,11 @@ export interface FeatureProbe {
 }
 
 export interface FPToggleDetail {
-  value: boolean | string | number | object;
+  value: boolean | string | number | any;
   ruleIndex: number | null;
   variationIndex: number | null;
   version: number | null;
-  reason: string;
+  reason: string | null;
 }
 
 export interface FPConfig {
@@ -46,13 +49,3 @@ export interface FPConfig {
   togglesUrl?: URL | string;
   eventsUrl?: URL | string;
 }
-
-// export type seconds = number;
-//
-// export interface IDuration {
-//   day?: number;
-//   hour?: number;
-//   minute?: number;
-//   second?: number;
-//   cron?: string;
-// }

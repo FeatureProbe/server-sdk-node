@@ -28,8 +28,19 @@ test("init FeatureProbe client", async () => {
   await fpClient.close();
 });
 
-test("invalid sdk key or url", () => {
+test("invalid sdk key or url", async () => {
+  const fpClient = new FeatureProbe(
+    {
+      remoteUrl: "https://featureprobe.io/server",
+      serverSdkKey: "server-7e12180d730851a11851354e770f00871226b03c",
+      refreshInterval: 1000
+    });
+  await fpClient.start();
 
+  const fpUser = new FPUser().stableRollout("key11")
+    .with("userId", "4");
+
+  console.log(fpClient.booleanDetail("bool_toggle", fpUser, true));
 });
 
 test("repo not initialized", async () => {

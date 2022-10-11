@@ -1,4 +1,4 @@
-// "use strict";
+"use strict";
 
 import "whatwg-fetch";
 // import { pino } from "pino";
@@ -10,14 +10,13 @@ const UA = `Node/${pkg.version}`;
 //   name: "FeatureProbe-Event"
 // });
 
-
 interface IAccessEvent {
   time: number;
   key: string;
   value: any;
   index: number;
   version: number;
-  reason: string;
+  reason: string | null;
 }
 
 interface IToggleCounter {
@@ -163,19 +162,30 @@ export class EventRecorder {
       access: EventRecorder.prepareSendData(events)
     }];
 
-    await fetch(this._eventsUrl, {
-      method: "POST",
-      cache: "no-cache",
-      headers: {
-        Authorization: this._serverSdkKey,
-        "Content-Type": "application/json",
-        UA: UA
-      },
-      body: JSON.stringify(eventRepos)
-    });
+    // await fetch(this._eventsUrl, {
+    //   method: "POST",
+    //   cache: "no-cache",
+    //   headers: {
+    //     Authorization: this._serverSdkKey,
+    //     "Content-Type": "application/json",
+    //     UA: UA
+    //   },
+    //   body: JSON.stringify(eventRepos)
+    // });
       // .catch(err =>
       // logger.error(err, "Failed to report access events")
     // );
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // await axios.post(this._eventsUrl, eventRepos, {
+    //   headers: {
+    //     Authorization: this._serverSdkKey,
+    //     "Content-Type": "application/json",
+    //     "User-Agent": UA,
+    //     "Access-Control-Allow-Origin": "*",
+    //     "Access-Control-Request-Method" : "POST"
+    //   },
+    // })
+    //   .catch((e:any)=>console.log(e));
   }
 
 }

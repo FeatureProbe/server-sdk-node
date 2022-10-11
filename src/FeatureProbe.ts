@@ -1,8 +1,10 @@
-import { FPUser } from "./FPUser";
+"use strict";
+
 import { FPToggleDetail, FPConfig } from "./type";
+import { FPUser } from "./FPUser";
+import { Repository } from "./Evaluate";
 import { EventRecorder } from "./Event";
 import { Synchronizer } from "./Sync";
-import { Repository } from "./Evaluate";
 
 export class FeatureProbe {
   private readonly _remoteUrl: string;
@@ -33,11 +35,9 @@ export class FeatureProbe {
     if (!remoteUrl && !togglesUrl) {
       throw new Error("remoteUrl or togglesUrl is required");
     }
-
     if (!remoteUrl && !eventsUrl) {
       throw new Error("remoteUrl or eventsUrl is required");
     }
-
     if (!remoteUrl && !togglesUrl && !eventsUrl) {
       throw new Error("remoteUrl is required");
     }
@@ -132,14 +132,7 @@ export class FeatureProbe {
         version: result.version ?? 0,
         reason: result.reason
       });
-
-      return {
-        value: result.value,
-        ruleIndex: result.ruleIndex || null,
-        variationIndex: result.variationIndex || null,
-        version: result.version || null,
-        reason: result.reason
-      } as FPToggleDetail;
+      return result;
     } else {
       return {
         value: defaultValue,

@@ -538,7 +538,7 @@ test("", () => {
     headers: {
       Authorization: "client-d19da802c229080f3925c4016fe77878a0d9fde3",
       "Content-Type": "application/json",
-      UA: "Java/1.1.0"
+      UA: "Java/1.1.0",
     }
   })
     .then(resp => {

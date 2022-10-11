@@ -1,9 +1,9 @@
-const pkg = require('./package.json');
+import pkg from "./package.json";
 const PKG_VERSION = pkg.version;
 
 module.exports = {
-  out: './doc',
-  name: 'FeatureProbe Client Side SDK for JavaScript  (' + PKG_VERSION + ')',
-  readme: 'none',
-  entryPoints: ['./src/index.ts']
+  out: "./doc",
+  name: "FeatureProbe Server Side SDK for NodeJS  (" + PKG_VERSION + ")",
+  readme: "none",
+  entryPoints: ["./src/index.ts"]
 };
