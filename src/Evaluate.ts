@@ -1,12 +1,11 @@
-"use strict";
+'use strict';
 
-import { FPToggleDetail } from "./type";
-import { FPUser } from "./FPUser";
+import { FPToggleDetail } from './type';
+import { FPUser } from './FPUser';
 
-import { createHash } from "crypto";
+import { createHash } from 'crypto';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const SemVer = require("semver/classes/semver");
+const SemVer = require('semver/classes/semver');
 
 const Defaults = {
   Split: {
@@ -201,13 +200,13 @@ export class Toggle {
 
   private disabledResult(user: FPUser, toggleKey: string, defaultValue: any): FPToggleDetail {
     const disabledResult = this.hitValue(this._disabledServe?.evalIndex(user, toggleKey), defaultValue);
-    disabledResult.reason = "Toggle disabled";
+    disabledResult.reason = 'Toggle disabled';
     return disabledResult;
   }
 
   private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string): FPToggleDetail {
     const defaultResult = this.hitValue(this._defaultServe?.evalIndex(user, toggleKey), defaultValue);
-    defaultResult.reason = `Default rule hit. ${warning ?? ""}`.trimEnd();
+    defaultResult.reason = `Default rule hit. ${warning ?? ''}`.trimEnd();
     return defaultResult;
   }
 }
@@ -263,7 +262,7 @@ class Segment {
   public contains(user: FPUser, segments: { [key: string]: Segment }) {
     return this._rules.some(rule =>
       !rule.conditions.some(c =>
-        c.type !== "segment" && user.getAttr(c.subject) === undefined
+        c.type !== 'segment' && user.getAttr(c.subject) === undefined
         || !c.meet(user, segments)
       )
     );
@@ -304,7 +303,7 @@ class Serve {
     }
     return this._split?.findIndex(user, toggleKey) || {
       hit: false,
-      reason: "Serve.split is null"
+      reason: 'Serve.split is null'
     } as IHitResult;
   }
 }
@@ -339,7 +338,7 @@ class Rule {
 
   public hit(user: FPUser, segments: { [key: string]: Segment }, toggleKey: string): IHitResult {
     for (const condition of this._conditions) {
-      if (!["segment", "datetime"].includes(condition.type)
+      if (!['segment', 'datetime'].includes(condition.type)
         && user.getAttr(condition.subject) === undefined) {
         return {
           hit: false,
@@ -354,7 +353,7 @@ class Rule {
     }
     return this._serve?.evalIndex(user, toggleKey) || {
       hit: false,
-      reason: "Rule.serve is null"
+      reason: 'Rule.serve is null'
     } as IHitResult;
   }
 }
@@ -430,7 +429,7 @@ class Split {
 export class Condition {
   private _subject: string;
   private _objects: string[];
-  private _type: "string" | "segment" | "datetime" | "semver" | "number";
+  private _type: 'string' | 'segment' | 'datetime' | 'semver' | 'number';
   private _predicate: string;
 
   constructor(json: any) {
@@ -456,11 +455,11 @@ export class Condition {
     this._objects = value;
   }
 
-  get type(): "string" | "segment" | "datetime" | "semver" | "number" {
+  get type(): 'string' | 'segment' | 'datetime' | 'semver' | 'number' {
     return this._type;
   }
 
-  set type(value: "string" | "segment" | "datetime" | "semver" | "number") {
+  set type(value: 'string' | 'segment' | 'datetime' | 'semver' | 'number') {
     this._type = value;
   }
 
@@ -475,65 +474,65 @@ export class Condition {
   private static readonly StringPredicate: {
     [key: string]: (target: string, objects: string[]) => boolean
   } = {
-    "is one of": (target, objects) => objects.some(o => target === o),
-    "ends with": (target, objects) => objects.some(o => target.endsWith(o)),
-    "starts with": (target, objects) => objects.some(o => target.startsWith(o)),
-    "contains": (target, objects) => objects.some(o => target.includes(o)),
-    "matches regex": (target, objects) => objects.some(o => new RegExp(o).test(target)),
-    "is not any of": (target, objects) => !objects.some(o => target === o),
-    "does not end with": (target, objects) => !objects.some(o => target.endsWith(o)),
-    "does not start with": (target, objects) => !objects.some(o => target.startsWith(o)),
-    "does not contain": (target, objects) => !objects.some(o => target.includes(o)),
-    "does not match regex": (target, objects) => !objects.some(o => new RegExp(o).test(target))
+    'is one of': (target, objects) => objects.some(o => target === o),
+    'ends with': (target, objects) => objects.some(o => target.endsWith(o)),
+    'starts with': (target, objects) => objects.some(o => target.startsWith(o)),
+    'contains': (target, objects) => objects.some(o => target.includes(o)),
+    'matches regex': (target, objects) => objects.some(o => new RegExp(o).test(target)),
+    'is not any of': (target, objects) => !objects.some(o => target === o),
+    'does not end with': (target, objects) => !objects.some(o => target.endsWith(o)),
+    'does not start with': (target, objects) => !objects.some(o => target.startsWith(o)),
+    'does not contain': (target, objects) => !objects.some(o => target.includes(o)),
+    'does not match regex': (target, objects) => !objects.some(o => new RegExp(o).test(target))
   };
 
   private static readonly SegmentPredicate: {
     [key: string]: (user: FPUser, objects: string[], segments: { [key: string]: Segment }) => boolean
   } = {
-    "is in": (user, objects, segments) => objects.some(o => segments?.[o]?.contains(user, segments)),
-    "is not in": (user, objects, segments) => !objects.some(o => segments?.[o]?.contains(user, segments))
+    'is in': (user, objects, segments) => objects.some(o => segments?.[o]?.contains(user, segments)),
+    'is not in': (user, objects, segments) => !objects.some(o => segments?.[o]?.contains(user, segments))
   };
 
   private static readonly DatetimePredicate: {
     [key: string]: (target: number, objects: string[]) => boolean
   } = {
-    "after": (target, objects) => objects.some(o => target >= parseInt(o)),
-    "before": (target, objects) => objects.some(o => target < parseInt(o))
+    'after': (target, objects) => objects.some(o => target >= parseInt(o)),
+    'before': (target, objects) => objects.some(o => target < parseInt(o))
   };
 
   private static readonly NumberPredicate: {
     [key: string]: (customValue: number, objects: string[]) => boolean
   } = {
-    "=": (cv, objects) => objects.some(o => cv == parseFloat(o)),
-    "!=": (cv, objects) => !objects.some(o => cv == parseFloat(o)),
-    ">": (cv, objects) => objects.some(o => cv > parseFloat(o)),
-    ">=": (cv, objects) => objects.some(o => cv >= parseFloat(o)),
-    "<": (cv, objects) => objects.some(o => cv < parseFloat(o)),
-    "<=": (cv, objects) => objects.some(o => cv <= parseFloat(o))
+    '=': (cv, objects) => objects.some(o => cv == parseFloat(o)),
+    '!=': (cv, objects) => !objects.some(o => cv == parseFloat(o)),
+    '>': (cv, objects) => objects.some(o => cv > parseFloat(o)),
+    '>=': (cv, objects) => objects.some(o => cv >= parseFloat(o)),
+    '<': (cv, objects) => objects.some(o => cv < parseFloat(o)),
+    '<=': (cv, objects) => objects.some(o => cv <= parseFloat(o))
   };
 
   private static readonly SemverPredicate: {
     [key: string]: (customValue: typeof SemVer, objects: string[]) => boolean
   } = {
-    "=": (cv, objects) => objects.some(o => cv.compare(o) === 0),
-    "!=": (cv, objects) => !objects.some(o => cv.compare(o) === 0),
-    ">": (cv, objects) => objects.some(o => cv.compare(o) > 0),
-    ">=": (cv, objects) => objects.some(o => cv.compare(o) >= 0),
-    "<": (cv, objects) => objects.some(o => cv.compare(o) < 0),
-    "<=": (cv, objects) => objects.some(o => cv.compare(o) <= 0)
+    '=': (cv, objects) => objects.some(o => cv.compare(o) === 0),
+    '!=': (cv, objects) => !objects.some(o => cv.compare(o) === 0),
+    '>': (cv, objects) => objects.some(o => cv.compare(o) > 0),
+    '>=': (cv, objects) => objects.some(o => cv.compare(o) >= 0),
+    '<': (cv, objects) => objects.some(o => cv.compare(o) < 0),
+    '<=': (cv, objects) => objects.some(o => cv.compare(o) <= 0)
   };
 
   public meet(user: FPUser, segments?: { [key: string]: Segment }): boolean {
     switch (this._type) {
-      case "string":
+      case 'string':
         return this.matchStringPredicate(user);
-      case "segment":
+      case 'segment':
         return !!segments && this.matchSegmentPredicate(user, segments);
-      case "datetime":
+      case 'datetime':
         return this.matchDatetimePredicate(user);
-      case "semver":
+      case 'semver':
         return this.matchSemverPredicate(user);
-      case "number":
+      case 'number':
         return this.matchNumberPredicate(user);
       default:
         return false;
@@ -593,7 +592,7 @@ export interface IHitResult {
 }
 
 export function saltHash(key: string, salt: string, bucketSize: number): number {
-  const sha = createHash("sha1").update(key + salt);
-  const bytes = sha.digest("hex").slice(-8);
+  const sha = createHash('sha1').update(key + salt);
+  const bytes = sha.digest('hex').slice(-8);
   return parseInt(bytes, 16) % bucketSize;
 }

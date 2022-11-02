@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-import { FPToggleDetail, FPConfig } from "./type";
-import { FPUser } from "./FPUser";
-import { Repository } from "./Evaluate";
-import { EventRecorder } from "./Event";
-import { Synchronizer } from "./Sync";
-import pino from "pino";
+import { FPToggleDetail, FPConfig } from './type';
+import { FPUser } from './FPUser';
+import { Repository } from './Evaluate';
+import { EventRecorder } from './Event';
+import { Synchronizer } from './Sync';
+import pino from 'pino';
 
 export class FeatureProbe {
   private readonly _remoteUrl: string;
@@ -20,6 +20,10 @@ export class FeatureProbe {
 
   private readonly _logger: pino.Logger;
 
+  get repository() {
+    return this._repository;
+  }
+
   constructor(
     {
       remoteUrl,
@@ -30,30 +34,30 @@ export class FeatureProbe {
       logger
     }: FPConfig) {
     if (!serverSdkKey) {
-      throw new Error("non empty serverSdkKey is required");
+      throw new Error('non empty serverSdkKey is required');
     }
     if (refreshInterval <= 0) {
-      throw new Error("refreshInterval is invalid");
+      throw new Error('refreshInterval is invalid');
     }
 
     if (!remoteUrl && !togglesUrl) {
-      throw new Error("remoteUrl or togglesUrl is required");
+      throw new Error('remoteUrl or togglesUrl is required');
     }
     if (!remoteUrl && !eventsUrl) {
-      throw new Error("remoteUrl or eventsUrl is required");
+      throw new Error('remoteUrl or eventsUrl is required');
     }
     if (!remoteUrl && !togglesUrl && !eventsUrl) {
-      throw new Error("remoteUrl is required");
+      throw new Error('remoteUrl is required');
     }
 
     this._serverSdkKey = serverSdkKey;
     this._refreshInterval = refreshInterval;
 
-    this._remoteUrl = new URL(remoteUrl ?? "").toString();
-    this._togglesUrl = new URL(togglesUrl ?? remoteUrl + "/api/server-sdk/toggles").toString();
-    this._eventsUrl = new URL(eventsUrl ?? remoteUrl + "/api/events").toString();
+    this._remoteUrl = new URL(remoteUrl ?? '').toString();
+    this._togglesUrl = new URL(togglesUrl ?? remoteUrl + '/api/server-sdk/toggles').toString();
+    this._eventsUrl = new URL(eventsUrl ?? remoteUrl + '/api/events').toString();
 
-    this._logger = logger ?? pino({ name: "FeatureProbe" });
+    this._logger = logger ?? pino({ name: 'FeatureProbe' });
     this._repository = new Repository({});
     this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval, this._logger);
     this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository, this._logger);
@@ -61,7 +65,7 @@ export class FeatureProbe {
 
   public async start() {
     await this._toggleSyncer.start();
-    this._logger.info("FeatureProbe client started");
+    this._logger.info('FeatureProbe client started');
   }
 
   public async close() {
@@ -76,35 +80,35 @@ export class FeatureProbe {
   }
 
   public booleanValue(key: string, user: FPUser, defaultValue: boolean): boolean {
-    return this.toggleDetail(key, user, defaultValue, "boolean").value as boolean;
+    return this.toggleDetail(key, user, defaultValue, 'boolean').value as boolean;
   }
 
   public numberValue(key: string, user: FPUser, defaultValue: number): number {
-    return this.toggleDetail(key, user, defaultValue, "number").value as number;
+    return this.toggleDetail(key, user, defaultValue, 'number').value as number;
   }
 
   public stringValue(key: string, user: FPUser, defaultValue: string): string {
-    return this.toggleDetail(key, user, defaultValue, "string").value as string;
+    return this.toggleDetail(key, user, defaultValue, 'string').value as string;
   }
 
   public jsonValue(key: string, user: FPUser, defaultValue: any): any {
-    return this.toggleDetail(key, user, defaultValue, "object").value;
+    return this.toggleDetail(key, user, defaultValue, 'object').value;
   }
 
   public booleanDetail(key: string, user: FPUser, defaultValue: boolean): FPToggleDetail {
-    return this.toggleDetail(key, user, defaultValue, "boolean");
+    return this.toggleDetail(key, user, defaultValue, 'boolean');
   }
 
   public numberDetail(key: string, user: FPUser, defaultValue: number): FPToggleDetail {
-    return this.toggleDetail(key, user, defaultValue, "number");
+    return this.toggleDetail(key, user, defaultValue, 'number');
   }
 
   public stringDetail(key: string, user: FPUser, defaultValue: string): FPToggleDetail {
-    return this.toggleDetail(key, user, defaultValue, "string");
+    return this.toggleDetail(key, user, defaultValue, 'string');
   }
 
   public jsonDetail(key: string, user: FPUser, defaultValue: object): FPToggleDetail {
-    return this.toggleDetail(key, user, defaultValue, "object");
+    return this.toggleDetail(key, user, defaultValue, 'object');
   }
 
   private toggleDetail(key: string, user: FPUser, defaultValue: any, valueType: ToggleValueType): FPToggleDetail {
@@ -114,7 +118,7 @@ export class FeatureProbe {
         ruleIndex: null,
         variationIndex: null,
         version: null,
-        reason: "FeatureProbe repository not initialized"
+        reason: 'FeatureProbe repository not initialized'
       } as FPToggleDetail;
     }
     const toggle = this._repository.getToggle(key);
@@ -152,4 +156,4 @@ export class FeatureProbe {
   }
 }
 
-type ToggleValueType = "boolean" | "number" | "string" | "object";
+type ToggleValueType = 'boolean' | 'number' | 'string' | 'object';

@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
-import pino from "pino";
+import pino from 'pino';
 
-require("isomorphic-fetch");
+require('isomorphic-fetch');
 
-import { Repository } from "./Evaluate";
+import { Repository } from './Evaluate';
 
-import pkg from "../package.json";
+import pkg from '../package.json';
 
 const UA = `Node/${pkg.version}`;
 
@@ -73,7 +73,7 @@ export class Synchronizer {
 
   public stop() {
     if (this._timer !== undefined) {
-      this._logger?.info("Closing FeatureProbe Synchronizer");
+      this._logger?.info('Closing FeatureProbe Synchronizer');
       clearInterval(this._timer);
       delete this._timer;
     }
@@ -81,23 +81,23 @@ export class Synchronizer {
 
   private async fetchRemoteRepo(): Promise<void> {
     await fetch(this._togglesUrl, {
-      method: "GET",
-      cache: "no-cache",
+      method: 'GET',
+      cache: 'no-cache',
       headers: {
         Authorization: this._serverSdkKey,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         UA: UA
       }
     })
       .then(resp => resp.json())
       .then(json => {
         this._logger?.debug(`Http response: ${json.status}`);
-        this._logger?.debug(json, "Http response body");
+        this._logger?.debug(json, 'Http response body');
         const latestRepo = new Repository(json);
         latestRepo.initialized = true;
         latestRepo.updatedTimestamp = Date.now();
         Object.assign(this._repository, latestRepo);
       })
-      .catch((e: any) => this._logger?.error(e, "Unexpected error from polling processor"));
+      .catch((e: any) => this._logger?.error(e, 'Unexpected error from polling processor'));
   }
 }

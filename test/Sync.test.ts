@@ -1,21 +1,15 @@
-import { Repository } from "../src/Evaluate";
-import { Synchronizer } from "../src/Sync";
-import fetchMock from "fetch-mock";
+import { Repository } from '../src/Evaluate';
+import { Synchronizer } from '../src/Sync';
+import fetchMock from 'fetch-mock';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const repoJson = require("./fixtures/repo.json");
+const repoJson = require('./fixtures/repo.json');
 const repo = new Repository(repoJson);
 
-
-afterEach(() => {
-  fetchMock.restore();
-})
-
-test("start sync and wait for first resp", async () => {
-  fetchMock.mock("https://test.featureprobe.io/toggles", JSON.stringify(repoJson));
+test('start sync and wait for first resp', async () => {
+  fetchMock.mock('https://test.featureprobe.io/toggles', JSON.stringify(repoJson));
   const repo2 = new Repository({});
-  const synchronizer = new Synchronizer("node-sdk",
-    new URL("https://test.featureprobe.io/toggles"),
+  const synchronizer = new Synchronizer('node-sdk',
+    new URL('https://test.featureprobe.io/toggles'),
     1000,
     repo2
   );
@@ -28,11 +22,13 @@ test("start sync and wait for first resp", async () => {
   expect(repo2).toStrictEqual(repo);
 });
 
-test("receive invalid json", async () => {
-  fetchMock.mock("https://test.featureprobe.io/toggles", { body: "{" });
+test('receive invalid json', async () => {
+  fetchMock.mock('https://test.featureprobe.io/toggles',
+    { body: '{' },
+    { overwriteRoutes: true });
   const repo2 = new Repository({});
-  const synchronizer = new Synchronizer("node-sdk",
-    new URL("https://test.featureprobe.io/toggles"),
+  const synchronizer = new Synchronizer('node-sdk',
+    new URL('https://test.featureprobe.io/toggles'),
     1000,
     repo2
   );
@@ -41,9 +37,11 @@ test("receive invalid json", async () => {
   expect(repo2).toStrictEqual(new Repository({}));
 });
 
-test("invalid url", async () => {
-  const synchronizer = new Synchronizer("node-sdk",
-    new URL("https://111"),  // more explicit errors will be checked in FeatureProbe.constructor
+test('invalid url', async () => {
+  fetchMock.mock('hppt://111', 404);
+
+  const synchronizer = new Synchronizer('node-sdk',
+    new URL('hppt://111'),  // more explicit errors will be checked in FeatureProbe.constructor
     1000,
     new Repository({})
   );

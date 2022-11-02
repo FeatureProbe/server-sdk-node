@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import pino from "pino";
+import pino from 'pino';
 
-require("isomorphic-fetch");
-import pkg from "../package.json";
+require('isomorphic-fetch');
+import pkg from '../package.json';
 
 const UA = `Node/${pkg.version}`;
 
@@ -78,7 +78,7 @@ export class EventRecorder {
 
   public record(event: IAccessEvent) {
     if (this._closed) {
-      this._logger?.warn("Trying to push access record to a closed EventProcessor, omitted");
+      this._logger?.warn('Trying to push access record to a closed EventProcessor, omitted');
       return;
     }
     this._sendQueue.push(event);
@@ -86,7 +86,7 @@ export class EventRecorder {
 
   public flush() {
     if (this._closed) {
-      this._logger?.warn("Trying to flush a closed EventProcessor, omitted");
+      this._logger?.warn('Trying to flush a closed EventProcessor, omitted');
       return;
     }
     this._taskQueue.enqueue(this.doFlush());
@@ -94,7 +94,7 @@ export class EventRecorder {
 
   public async stop(): Promise<void> {
     if (this._closed) {
-      this._logger?.warn("EventProcessor is already closed");
+      this._logger?.warn('EventProcessor is already closed');
       return;
     }
     clearInterval(this._timer);
@@ -161,19 +161,19 @@ export class EventRecorder {
     }];
 
     await fetch(this._eventsUrl, {
-      method: "POST",
-      cache: "no-cache",
+      method: 'POST',
+      cache: 'no-cache',
       headers: {
         Authorization: this._serverSdkKey,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         UA: UA
       },
       body: JSON.stringify(eventRepos)
     })
       .then(resp =>
-        this._logger?.debug(resp, "Http response (event push)"))
+        this._logger?.debug(resp, 'Http response (event push)'))
       .catch(err =>
-        this._logger?.error(err, "Failed to report access events")
+        this._logger?.error(err, 'Failed to report access events')
       );
   }
 }
