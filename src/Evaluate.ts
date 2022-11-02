@@ -4,9 +4,9 @@ import { FPToggleDetail } from "./type";
 import { FPUser } from "./FPUser";
 
 import { createHash } from "crypto";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const SemVer = require("semver/classes/semver");
-
 
 const Defaults = {
   Split: {

@@ -1,17 +1,16 @@
-import fetchMock from "jest-fetch-mock";
+import fetchMock from "fetch-mock";
 
 import { EventRecorder } from "../src/Event";
 
-beforeEach(() => {
-  fetchMock.enableMocks();
-});
-
 afterEach(() => {
-  fetchMock.resetMocks();
-});
+  fetchMock.restore();
+})
 
 test("flush event", async () => {
-  const recorder = new EventRecorder("sdk key", "https://test.featureprobe.io/api/events", 1000);
+  const fakeEventUrl = "https://test.featureprobe.io/api/events";
+  const mockApi = fetchMock.mock(fakeEventUrl, 200);
+
+  const recorder = new EventRecorder("sdk key", fakeEventUrl, 1000);
   recorder.record({
     time: Date.now(),
     key: "toggle key",
@@ -28,7 +27,10 @@ test("flush event", async () => {
     reason: "default",
     index: -1
   });
-  await new Promise(r => setTimeout(r, 3000));
+  recorder.flush();
+  await new Promise(r => setTimeout(r, 2000));
+  expect(JSON.parse(mockApi.lastOptions()?.body?.toString() ?? "[]")[0].events)
+    .toHaveLength(2);
 });
 
 test("invalid url", async () => {

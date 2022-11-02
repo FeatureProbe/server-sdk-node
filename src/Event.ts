@@ -1,14 +1,11 @@
 "use strict";
 
-import "whatwg-fetch";
-// import { pino } from "pino";
+import pino from "pino";
 
+require("isomorphic-fetch");
 import pkg from "../package.json";
 
 const UA = `Node/${pkg.version}`;
-// const logger = pino({
-//   name: "FeatureProbe-Event"
-// });
 
 interface IAccessEvent {
   time: number;
@@ -42,6 +39,8 @@ export class EventRecorder {
   private _timer: NodeJS.Timer;
   private readonly _dispatch: Promise<void>;
 
+  private readonly _logger?: pino.Logger;
+
   get serverSdkKey(): string {
     return this._serverSdkKey;
   }
@@ -65,7 +64,8 @@ export class EventRecorder {
 
   constructor(serverSdkKey: string,
               eventsUrl: URL | string,
-              flushInterval: number) {
+              flushInterval: number,
+              logger?: pino.Logger) {
     this._serverSdkKey = serverSdkKey;
     this._eventsUrl = new URL(eventsUrl).toString();
     this._closed = false;
@@ -73,20 +73,20 @@ export class EventRecorder {
     this._taskQueue = new AsyncBlockingQueue<Promise<void>>();
     this._timer = setInterval(() => this.flush(), flushInterval);
     this._dispatch = this.startDispatch();
+    this._logger = logger;
   }
 
   public record(event: IAccessEvent) {
     if (this._closed) {
-      // logger.warn("Trying to push access record to a closed EventProcessor, omitted");
+      this._logger?.warn("Trying to push access record to a closed EventProcessor, omitted");
       return;
     }
-    // FIXME: lock?
     this._sendQueue.push(event);
   }
 
   public flush() {
     if (this._closed) {
-      // logger.warn("Trying to flush a closed EventProcessor, omitted");
+      this._logger?.warn("Trying to flush a closed EventProcessor, omitted");
       return;
     }
     this._taskQueue.enqueue(this.doFlush());
@@ -94,7 +94,7 @@ export class EventRecorder {
 
   public async stop(): Promise<void> {
     if (this._closed) {
-      // logger.warn("EventProcessor is already closed");
+      this._logger?.warn("EventProcessor is already closed");
       return;
     }
     clearInterval(this._timer);
@@ -153,44 +153,32 @@ export class EventRecorder {
     if (this._sendQueue.length === 0) {
       return;
     }
-    // FIXME: lock.acquire()?
     const events = Object.assign([], this._sendQueue);
     this._sendQueue = [];
-    // FIXME: lock.release()?
     const eventRepos = [{
       events: events,
       access: EventRecorder.prepareSendData(events)
     }];
 
-    // await fetch(this._eventsUrl, {
-    //   method: "POST",
-    //   cache: "no-cache",
-    //   headers: {
-    //     Authorization: this._serverSdkKey,
-    //     "Content-Type": "application/json",
-    //     UA: UA
-    //   },
-    //   body: JSON.stringify(eventRepos)
-    // });
-      // .catch(err =>
-      // logger.error(err, "Failed to report access events")
-    // );
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    // await axios.post(this._eventsUrl, eventRepos, {
-    //   headers: {
-    //     Authorization: this._serverSdkKey,
-    //     "Content-Type": "application/json",
-    //     "User-Agent": UA,
-    //     "Access-Control-Allow-Origin": "*",
-    //     "Access-Control-Request-Method" : "POST"
-    //   },
-    // })
-    //   .catch((e:any)=>console.log(e));
+    await fetch(this._eventsUrl, {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        Authorization: this._serverSdkKey,
+        "Content-Type": "application/json",
+        UA: UA
+      },
+      body: JSON.stringify(eventRepos)
+    })
+      .then(resp =>
+        this._logger?.debug(resp, "Http response (event push)"))
+      .catch(err =>
+        this._logger?.error(err, "Failed to report access events")
+      );
   }
-
 }
 
-// https://stackoverflow.com/questions/47157428/how-to-implement-a-pseudo-blocking-async-queue-in-js-ts
+// cred: https://stackoverflow.com/questions/47157428/how-to-implement-a-pseudo-blocking-async-queue-in-js-ts
 class AsyncBlockingQueue<T> {
   private _promises: Promise<T>[];
   private _resolvers: ( (t: T) => void )[];

@@ -5,6 +5,7 @@ import { FPUser } from "./FPUser";
 import { Repository } from "./Evaluate";
 import { EventRecorder } from "./Event";
 import { Synchronizer } from "./Sync";
+import pino from "pino";
 
 export class FeatureProbe {
   private readonly _remoteUrl: string;
@@ -17,13 +18,16 @@ export class FeatureProbe {
   private readonly _toggleSyncer: Synchronizer;
   private readonly _repository: Repository;
 
+  private readonly _logger: pino.Logger;
+
   constructor(
     {
       remoteUrl,
       togglesUrl,
       eventsUrl,
       serverSdkKey,
-      refreshInterval = 1000
+      refreshInterval = 1000,
+      logger
     }: FPConfig) {
     if (!serverSdkKey) {
       throw new Error("non empty serverSdkKey is required");
@@ -46,22 +50,25 @@ export class FeatureProbe {
     this._refreshInterval = refreshInterval;
 
     this._remoteUrl = new URL(remoteUrl ?? "").toString();
-    this._togglesUrl = new URL(togglesUrl ?? this._remoteUrl + "/api/server-sdk/toggles").toString();
-    this._eventsUrl = new URL(eventsUrl ?? this._remoteUrl + "/api/events").toString();
+    this._togglesUrl = new URL(togglesUrl ?? remoteUrl + "/api/server-sdk/toggles").toString();
+    this._eventsUrl = new URL(eventsUrl ?? remoteUrl + "/api/events").toString();
 
+    this._logger = logger ?? pino({ name: "FeatureProbe" });
     this._repository = new Repository({});
-    this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval);
-    this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository);
+    this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval, this._logger);
+    this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository, this._logger);
   }
 
   public async start() {
     await this._toggleSyncer.start();
+    this._logger.info("FeatureProbe client started");
   }
 
   public async close() {
     await this._eventRecorder.stop();
     this._toggleSyncer.stop();
     this._repository.clear();
+    this._logger.flush();
   }
 
   public flush() {

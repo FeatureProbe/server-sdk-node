@@ -1,21 +1,18 @@
 import { Repository } from "../src/Evaluate";
 import { Synchronizer } from "../src/Sync";
-import fetchMock from "jest-fetch-mock";
+import fetchMock from "fetch-mock";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const repoJson = require("./fixtures/repo.json");
 const repo = new Repository(repoJson);
 
-beforeEach(() => {
-  fetchMock.enableMocks();
-});
 
 afterEach(() => {
-  fetchMock.resetMocks();
-});
+  fetchMock.restore();
+})
 
 test("start sync and wait for first resp", async () => {
-  fetchMock.mockResponse(JSON.stringify(repoJson));
+  fetchMock.mock("https://test.featureprobe.io/toggles", JSON.stringify(repoJson));
   const repo2 = new Repository({});
   const synchronizer = new Synchronizer("node-sdk",
     new URL("https://test.featureprobe.io/toggles"),
@@ -32,7 +29,7 @@ test("start sync and wait for first resp", async () => {
 });
 
 test("receive invalid json", async () => {
-  fetchMock.mockResponse("{");
+  fetchMock.mock("https://test.featureprobe.io/toggles", { body: "{" });
   const repo2 = new Repository({});
   const synchronizer = new Synchronizer("node-sdk",
     new URL("https://test.featureprobe.io/toggles"),
@@ -40,8 +37,6 @@ test("receive invalid json", async () => {
     repo2
   );
   await synchronizer.start();
-
-  // normally retrying, manually see the log
   await new Promise(r => setTimeout(r, 3000));
   expect(repo2).toStrictEqual(new Repository({}));
 });
@@ -54,7 +49,6 @@ test("invalid url", async () => {
   );
   await synchronizer.start();
 
-  // normally retrying, manually see the log
   await new Promise(r => setTimeout(r, 3000));
   expect(synchronizer.repository).toStrictEqual(new Repository({}));
   expect(synchronizer.repository.initialized).toBe(false);

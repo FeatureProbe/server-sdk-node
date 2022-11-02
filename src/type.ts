@@ -1,6 +1,9 @@
+import { pino } from "pino";
+
 export interface FPUser {
 
   key: string;
+
   attrs: { [key: string]: string };
 
   stableRollout(key: string): FPUser;
@@ -11,6 +14,7 @@ export interface FPUser {
 }
 
 export interface FeatureProbe {
+
   start(): void;
 
   close(): void;
@@ -48,4 +52,5 @@ export interface FPConfig {
   remoteUrl?: URL | string;
   togglesUrl?: URL | string;
   eventsUrl?: URL | string;
+  logger?: pino.Logger;
 }

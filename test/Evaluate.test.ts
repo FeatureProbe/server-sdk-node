@@ -526,23 +526,3 @@ test("invalid semver condition", () => {
   condition.objects = ["1.2.1"];
   expect(condition.meet(user)).toBeFalsy();
 });
-
-
-import { pino } from "pino";
-import "whatwg-fetch";
-
-test("", () => {
-  fetch("baidu.com", {
-    method: "GET",
-    cache: "no-cache",
-    headers: {
-      Authorization: "client-d19da802c229080f3925c4016fe77878a0d9fde3",
-      "Content-Type": "application/json",
-      UA: "Java/1.1.0",
-    }
-  })
-    .then(resp => {
-      return resp.text();
-    })
-    .then(text => console.log(text.length));
-});

@@ -1,21 +1,12 @@
 import { FeatureProbe, FPUser } from "../src";
-import fetchMock from "jest-fetch-mock";
-
-beforeEach(() => {
-  fetchMock.enableMocks();
-});
-
-afterEach(() => {
-  fetchMock.resetMocks();
-});
-
+import fetchMock from "fetch-mock";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const repoJson = require("./fixtures/repo.json");
-const uninitPrompt = "FeatureProbe repository not initialized";
+const unInitPrompt = "FeatureProbe repository not initialized";
 
 test("init FeatureProbe client", async () => {
-  fetchMock.mockOnce(JSON.stringify(repoJson));
+  fetchMock.mock("https://test.featureprobe.io/api/server-sdk/toggles", JSON.stringify(repoJson));
 
   const fpClient = new FeatureProbe(
     {
@@ -29,30 +20,22 @@ test("init FeatureProbe client", async () => {
 });
 
 test("invalid sdk key or url", async () => {
-  const fpClient = new FeatureProbe(
+  expect(new FeatureProbe(
     {
-      remoteUrl: "https://featureprobe.io/server",
-      serverSdkKey: "server-7e12180d730851a11851354e770f00871226b03c",
+      remoteUrl: "https://test.featureprobe.io",
+      serverSdkKey: "",
       refreshInterval: 1000
-    });
-  await fpClient.start();
-
-  const fpUser = new FPUser().stableRollout("key11")
-    .with("userId", "4");
-
-  console.log(fpClient.booleanDetail("bool_toggle", fpUser, true));
+    })).toThrow();
 });
 
 test("repo not initialized", async () => {
-  fetchMock.mockReject();
-  // fetchMock.mockOnce("{}");
+  fetchMock.mock("https://test.featureprobe.io/api/server-sdk/toggles", 400);
 
-  const fpClient = new FeatureProbe(
-    {
-      remoteUrl: "https://test.featureprobe.io",
-      serverSdkKey: "sdk key",
-      refreshInterval: 1000
-    });
+  const fpClient = new FeatureProbe({
+    remoteUrl: "https://test.featureprobe.io",
+    serverSdkKey: "sdk key",
+    refreshInterval: 1000
+  });
   await fpClient.start();
 
   const fpUser = new FPUser().stableRollout("key11")
@@ -61,26 +44,26 @@ test("repo not initialized", async () => {
   expect(fpClient.booleanValue("bool_toggle", fpUser, true)).toBe(true);
   const booleanDetail = fpClient.booleanDetail("bool_toggle", fpUser, true);
   expect(booleanDetail.value).toBe(true);
-  expect(booleanDetail.reason).toBe(uninitPrompt);
+  expect(booleanDetail.reason).toBe(unInitPrompt);
 
   expect(fpClient.stringValue("string_toggle", fpUser, "ss")).toBe("ss");
   const stringDetail = fpClient.stringDetail("string_toggle", fpUser, "sss");
   expect(stringDetail.value).toBe("sss");
-  expect(stringDetail.reason).toBe(uninitPrompt);
+  expect(stringDetail.reason).toBe(unInitPrompt);
 
   expect(fpClient.numberValue("number_toggle", fpUser, -3.2e10)).toBe(-3.2e10);
   const numberDetail = fpClient.numberDetail("number_toggle", fpUser, -3.2e10);
   expect(numberDetail.value).toBe(-3.2e10);
-  expect(numberDetail.reason).toBe(uninitPrompt);
+  expect(numberDetail.reason).toBe(unInitPrompt);
 
   expect(fpClient.jsonValue("json_toggle", fpUser, {})).toEqual({});
   const jsonDetail = fpClient.jsonDetail("json_toggle", fpUser, { a: null });
   expect(jsonDetail.value).toEqual({ a: null });
-  expect(jsonDetail.reason).toBe(uninitPrompt);
+  expect(jsonDetail.reason).toBe(unInitPrompt);
 });
 
 test("test eval", async () => {
-  fetchMock.mockOnce(JSON.stringify(repoJson));
+  fetchMock.mock("https://test.featureprobe.io/api/server-sdk/toggles", JSON.stringify(repoJson));
 
   const fpClient = new FeatureProbe(
     {
