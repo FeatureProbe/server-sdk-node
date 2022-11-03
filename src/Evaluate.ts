@@ -89,8 +89,8 @@ export class Toggle {
     this._enabled = json.enabled || false;
     this._version = json.version || 1;
     this._forClient = json.forClient || false;
-    this._disabledServe = json.disabledServe ? null : new Serve(json.disabledServe);
-    this._defaultServe = json.defaultServe ? null : new Serve(json.defaultServe);
+    this._disabledServe = json.disabledServe ? new Serve(json.disabledServe) : null;
+    this._defaultServe = json.defaultServe ? new Serve(json.defaultServe) : null;
     this._rules = [];
     for (const r of json.rules || []) {
       this._rules.push(new Rule(r));
@@ -275,7 +275,7 @@ class Serve {
 
   constructor(json: any) {
     this._select = json.select;
-    this._split = json.split === undefined ? null : new Split(json.split);
+    this._split = json.split ? new Split(json.split) : null;
   }
 
   get select(): number {
@@ -313,7 +313,7 @@ class Rule {
   private _conditions: Condition[];
 
   constructor(json: any) {
-    this._serve = json.serve === undefined ? null : new Serve(json.serve);
+    this._serve = json.serve ? new Serve(json.serve) : null;
     this._conditions = [];
     for (const cond of json.conditions || []) {
       this._conditions.push(new Condition(cond));
@@ -358,7 +358,7 @@ class Rule {
   }
 }
 
-class Split {
+export class Split {
   private _distribution: number[][][];
   private _bucketBy: string;
   private _salt: string;

@@ -26,9 +26,9 @@ const logToFile = pino.transport({
 });
 
 const fpClient = new featureProbe.FeatureProbe({
-  remoteUrl: 'https://featureprobe.io',
+  remoteUrl: 'https://featureprobe.io/server',
   // remoteUrl: "http://127.0.0.1.4007", // for local docker
-  serverSdkKey: 'server-1393c8287c0a87adc4ec2f3141b5f24d1aa97070',
+  serverSdkKey: 'server-9b8b98cf444328ff1280a0757b26ec0abdacba76',
   refreshInterval: 5000,
   logTransport: pino(logToFile)
 });

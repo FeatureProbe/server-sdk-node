@@ -5,7 +5,9 @@ const repoJson = require('./fixtures/repo.json');
 const unInitPrompt = 'FeatureProbe repository not initialized';
 
 test('init FeatureProbe client', async () => {
-  fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles', JSON.stringify(repoJson));
+  fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles',
+    JSON.stringify(repoJson),
+    { overwriteRoutes: true });
 
   const fpClient = new FeatureProbe(
     {
@@ -20,7 +22,9 @@ test('init FeatureProbe client', async () => {
 });
 
 test('close client', async () => {
-  fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles', JSON.stringify(repoJson));
+  fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles',
+    JSON.stringify(repoJson),
+    { overwriteRoutes: true });
 
   const fpClient = new FeatureProbe(
     {
@@ -34,12 +38,36 @@ test('close client', async () => {
   expect(Object.keys(fpClient.repository.toggles)).toHaveLength(0);
 });
 
-test('invalid sdk key or url', async () => {
+test('invalid sdk key', async () => {
   expect(() => new FeatureProbe(
     {
       remoteUrl: 'https://test.featureprobe.io',
       serverSdkKey: '',
       refreshInterval: 1000
+    })).toThrow();
+
+  expect(() => new FeatureProbe(
+    {
+      remoteUrl: 'https://test.featureprobe.io',
+      // @ts-ignore
+      serverSdkKey: null,
+      refreshInterval: 1000
+    })).toThrow();
+});
+
+test('invalid url', async () => {
+  expect(() => new FeatureProbe(
+    {
+      remoteUrl: '?',
+      serverSdkKey: 'aaa',
+      refreshInterval: 1000
+    })).toThrow();
+});
+
+test('no url', async () => {
+  expect(() => new FeatureProbe(
+    {
+      serverSdkKey: 'aaa'
     })).toThrow();
 });
 

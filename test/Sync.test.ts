@@ -6,7 +6,9 @@ const repoJson = require('./fixtures/repo.json');
 const repo = new Repository(repoJson);
 
 test('start sync and wait for first resp', async () => {
-  fetchMock.mock('https://test.featureprobe.io/toggles', JSON.stringify(repoJson));
+  fetchMock.mock('https://test.featureprobe.io/toggles',
+    JSON.stringify(repoJson),
+    { overwriteRoutes: true });
   const repo2 = new Repository({});
   const synchronizer = new Synchronizer('node-sdk',
     new URL('https://test.featureprobe.io/toggles'),

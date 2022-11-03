@@ -6,8 +6,7 @@ require('isomorphic-fetch');
 
 import { Repository } from './Evaluate';
 
-import pkg from '../package.json';
-
+const pkg = require('../package.json');
 const UA = `Node/${pkg.version}`;
 
 export class Synchronizer {

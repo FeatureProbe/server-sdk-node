@@ -3,8 +3,8 @@
 import pino from 'pino';
 
 require('isomorphic-fetch');
-import pkg from '../package.json';
 
+const pkg = require('../package.json');
 const UA = `Node/${pkg.version}`;
 
 interface IAccessEvent {

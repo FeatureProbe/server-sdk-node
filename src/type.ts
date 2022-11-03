@@ -48,7 +48,7 @@ export interface FPToggleDetail {
 
 export interface FPConfig {
   serverSdkKey: string;
-  refreshInterval: number;
+  refreshInterval?: number;
   remoteUrl?: URL | string;
   togglesUrl?: URL | string;
   eventsUrl?: URL | string;

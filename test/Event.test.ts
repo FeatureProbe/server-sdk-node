@@ -4,7 +4,9 @@ import { EventRecorder } from '../src/Event';
 
 test('flush event', async () => {
   const fakeEventUrl = 'https://test.featureprobe.io/api/events';
-  const mockApi = fetchMock.mock(fakeEventUrl, { status: 200, body: '{' });
+  const mockApi = fetchMock.mock(fakeEventUrl,
+    { status: 200, body: '{' },
+    { overwriteRoutes: true });
 
   const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
   recorder.record({
@@ -35,7 +37,9 @@ test('invalid url', async () => {
 
 test('get snapshot', () => {
   const fakeEventUrl = 'https://test.featureprobe.io/api/events';
-  const mockApi = fetchMock.mock(fakeEventUrl, { status: 200, body: '{' });
+  const mockApi = fetchMock.mock(fakeEventUrl,
+    { status: 200, body: '{' },
+    { overwriteRoutes: true });
 
   const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
   recorder.record({
@@ -46,4 +50,29 @@ test('get snapshot', () => {
     reason: 'default',
     index: -1
   });
+});
+
+test('record after close', async () => {
+  const fakeEventUrl = 'https://test.featureprobe.io/api/events';
+  const mockApi = fetchMock.mock(fakeEventUrl, 200, { overwriteRoutes: true });
+
+  const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
+  await recorder.stop();
+  recorder.record({
+    time: Date.now(),
+    key: 'toggle key',
+    value: 'eval value',
+    version: 1,
+    reason: 'default',
+    index: -1
+  });
+});
+
+test('close twice', async () => {
+  const fakeEventUrl = 'https://test.featureprobe.io/api/events';
+  const mockApi = fetchMock.mock(fakeEventUrl, 200, { overwriteRoutes: true });
+
+  const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
+  await recorder.stop();
+  await recorder.stop();
 });

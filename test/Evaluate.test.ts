@@ -1,4 +1,4 @@
-import { saltHash, Repository, Condition } from '../src/Evaluate';
+import { saltHash, Repository, Condition, Split } from '../src/Evaluate';
 import { FPUser } from '../src';
 
 const repo = new Repository(require('./fixtures/repo.json'));
@@ -519,4 +519,33 @@ test('invalid semver condition', () => {
 
   condition.objects = ['1.2.1'];
   expect(condition.meet(user)).toBeFalsy();
+});
+
+test('get user split group', () => {
+  const split = new Split('');
+  split.distribution = [[[0, 5000]], [[5000, 10000]]];
+  const user = new FPUser().stableRollout('test_user_key');
+
+  const commonIdx = split.findIndex(user, 'test_toggle_key');
+  split.bucketBy = 'email';
+  split.salt = 'abcddeafasde';
+  user.with('email', 'test@gmail.com');
+  const customIdx = split.findIndex(user, 'test_toggle_key');
+
+  expect(commonIdx.index).toBe(0);
+  expect(customIdx.index).toBe(1);
+});
+
+test('user has no key for split', () => {
+  const split = new Split('');
+  split.distribution = [[[0, 5000]], [[5000, 10000]]];
+  const user = new FPUser();
+
+  const result1 = split.findIndex(user, 'test_toggle_key');
+  const key1 = user.key;
+  const result2 = split.findIndex(user, 'test_toggle_key');
+  const key2 = user.key;
+
+  expect(result1).toStrictEqual(result2);
+  expect(key1).toBe(key2);
 });
