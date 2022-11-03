@@ -7,6 +7,10 @@ import { EventRecorder } from './Event';
 import { Synchronizer } from './Sync';
 import pino from 'pino';
 
+/**
+ * A client for the FeatureProbe API.
+ * Applications should instantiate a single {@link FeatureProbe} for the lifetime of their application.
+ */
 export class FeatureProbe {
   private readonly _remoteUrl: string;
   private readonly _togglesUrl: string;
@@ -24,6 +28,17 @@ export class FeatureProbe {
     return this._repository;
   }
 
+  /**
+   * Creates a new client instance that connects to FeatureProbe.
+   * Undefined optional parameters will be set as the default configurations.
+   *
+   * @param remoteUrl url for FeatureProbe api server
+   * @param togglesUrl url of FeatureProbe api server's toggle controller, leave it as blank to use the same api server as {@link remoteUrl}
+   * @param eventsUrl url of FeatureProbe api server's event report controller, leave it as blank to use the same api server as {@link remoteUrl}
+   * @param serverSdkKey key for your FeatureProbe environment
+   * @param refreshInterval interval between polls to refresh local toggles
+   * @param logger pino logger, if you want to use transport or advanced settings, please define one instance and pass to this param
+   */
   constructor(
     {
       remoteUrl,
@@ -63,11 +78,17 @@ export class FeatureProbe {
     this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository, this._logger);
   }
 
+  /**
+   * Initializes the toggle repository, <b>should be awaited before evaluating features</b>.
+   */
   public async start() {
     await this._toggleSyncer.start();
     this._logger.info('FeatureProbe client started');
   }
 
+  /**
+   * Closes the FeatureProbe client, this would properly clean the memory and report all events.
+   */
   public async close() {
     await this._eventRecorder.stop();
     this._toggleSyncer.stop();
@@ -75,38 +96,89 @@ export class FeatureProbe {
     this._logger.flush();
   }
 
+  /**
+   * Manually events push.
+   */
   public flush() {
     this._eventRecorder.flush();
   }
 
+  /**
+   * Gets the evaluated value of a boolean toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public booleanValue(key: string, user: FPUser, defaultValue: boolean): boolean {
     return this.toggleDetail(key, user, defaultValue, 'boolean').value as boolean;
   }
 
+  /**
+   * Gets the evaluated value of a number toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public numberValue(key: string, user: FPUser, defaultValue: number): number {
     return this.toggleDetail(key, user, defaultValue, 'number').value as number;
   }
 
+  /**
+   * Gets the evaluated value of a string toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public stringValue(key: string, user: FPUser, defaultValue: string): string {
     return this.toggleDetail(key, user, defaultValue, 'string').value as string;
   }
 
+  /**
+   * Gets the evaluated value of a json toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public jsonValue(key: string, user: FPUser, defaultValue: any): any {
     return this.toggleDetail(key, user, defaultValue, 'object').value;
   }
 
+  /**
+   * Gets the detailed evaluation results of a boolean toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public booleanDetail(key: string, user: FPUser, defaultValue: boolean): FPToggleDetail {
     return this.toggleDetail(key, user, defaultValue, 'boolean');
   }
 
+  /**
+   * Gets the detailed evaluation results of a number toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public numberDetail(key: string, user: FPUser, defaultValue: number): FPToggleDetail {
     return this.toggleDetail(key, user, defaultValue, 'number');
   }
 
+  /**
+   * Gets the detailed evaluation results of a string toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public stringDetail(key: string, user: FPUser, defaultValue: string): FPToggleDetail {
     return this.toggleDetail(key, user, defaultValue, 'string');
   }
 
+  /**
+   * Gets the detailed evaluation results of a json toggle.
+   * @param key toggle key
+   * @param user user to be evaluated
+   * @param defaultValue default return value
+   */
   public jsonDetail(key: string, user: FPUser, defaultValue: object): FPToggleDetail {
     return this.toggleDetail(key, user, defaultValue, 'object');
   }
