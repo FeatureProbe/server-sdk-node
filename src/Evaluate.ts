@@ -79,8 +79,8 @@ export class Toggle {
   private _enabled: boolean;
   private _version: number;
   private _forClient: boolean;
-  private _disabledServe: Serve | null;
-  private _defaultServe: Serve | null;
+  private _disabledServe: Serve;
+  private _defaultServe: Serve;
   private _rules: Rule[];
   private _variations: any[];
 
@@ -89,8 +89,8 @@ export class Toggle {
     this._enabled = json.enabled || false;
     this._version = json.version || 1;
     this._forClient = json.forClient || false;
-    this._disabledServe = json.disabledServe ? new Serve(json.disabledServe) : null;
-    this._defaultServe = json.defaultServe ? new Serve(json.defaultServe) : null;
+    this._disabledServe = new Serve(json.disabledServe);
+    this._defaultServe = new Serve(json.defaultServe);
     this._rules = [];
     for (const r of json.rules || []) {
       this._rules.push(new Rule(r));
@@ -130,19 +130,19 @@ export class Toggle {
     this._forClient = value;
   }
 
-  get disabledServe(): Serve | null {
+  get disabledServe(): Serve {
     return this._disabledServe;
   }
 
-  set disabledServe(value: Serve | null) {
+  set disabledServe(value: Serve) {
     this._disabledServe = value;
   }
 
-  get defaultServe(): Serve | null {
+  get defaultServe(): Serve {
     return this._defaultServe;
   }
 
-  set defaultServe(value: Serve | null) {
+  set defaultServe(value: Serve) {
     this._defaultServe = value;
   }
 
@@ -295,7 +295,7 @@ class Serve {
   }
 
   public evalIndex(user: FPUser, toggleKey: string): IHitResult {
-    if (this._select) {
+    if (this._select != null) {
       return {
         hit: true,
         index: this._select

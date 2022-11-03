@@ -1,8 +1,11 @@
 import { FeatureProbe, FPUser } from '../src';
+import { Repository } from '../src/Evaluate';
 import fetchMock from 'fetch-mock';
 
 const repoJson = require('./fixtures/repo.json');
 const unInitPrompt = 'FeatureProbe repository not initialized';
+
+const scenarios = require('./fixtures/spec/spec/toggle_simple_spec.json');
 
 test('init FeatureProbe client', async () => {
   fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles',
@@ -171,4 +174,62 @@ test('eval toggle not exist', async () => {
   expect(fpClient.stringValue('not_exist_toggle', fpUser, 'ss')).toBe('ss');
   expect(fpClient.numberValue('not_exist_toggle', fpUser, -3.2e10)).toBe(-3.2e10);
   expect(fpClient.jsonValue('not_exist_toggle', fpUser, {})).toEqual({});
+});
+
+test('test scenarios', async () => {
+  fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles',
+    200, { overwriteRoutes: true });
+
+  for (const scenario of scenarios.tests) {
+    const { scenario: name, fixture } = scenario;
+    const repo = new Repository(fixture);
+    repo.initialized = true;
+
+    const fpClient = new FeatureProbe(
+      {
+        remoteUrl: 'https://test.featureprobe.io',
+        serverSdkKey: 'sdk key'
+      });
+    ( fpClient as any )._repository = repo;
+
+    for (const testCase of scenario.cases) {
+      console.log(`starting execute scenario: ${name}, case: ${testCase.name}`);
+      const userCase = testCase.user;
+      const fpUser = new FPUser().stableRollout(userCase.key);
+      for (const cv of userCase.customValues) {
+        fpUser.with(cv.key, cv.value);
+      }
+
+      const funcCase = testCase.function;
+      const { name: funcName, toggle: toggleKey, default: defaultValue } = funcCase;
+      const expectValue = testCase.expectResult.value;
+
+      switch (funcName) {
+        case 'bool_value':
+          expect(fpClient.booleanValue(toggleKey, fpUser, defaultValue)).toBe(expectValue);
+          break;
+        case 'bool_detail':
+          expect(fpClient.booleanDetail(toggleKey, fpUser, defaultValue).value).toBe(expectValue);
+          break;
+        case 'string_value':
+          expect(fpClient.stringValue(toggleKey, fpUser, defaultValue)).toBe(expectValue);
+          break;
+        case 'string_detail':
+          expect(fpClient.stringDetail(toggleKey, fpUser, defaultValue).value).toBe(expectValue);
+          break;
+        case 'number_value':
+          expect(fpClient.numberValue(toggleKey, fpUser, defaultValue)).toBe(expectValue);
+          break;
+        case 'number_detail':
+          expect(fpClient.numberDetail(toggleKey, fpUser, defaultValue).value).toBe(expectValue);
+          break;
+        case 'json_value':
+          expect(fpClient.jsonValue(toggleKey, fpUser, defaultValue)).toStrictEqual(expectValue);
+          break;
+        case 'json_detail':
+          expect(fpClient.jsonDetail(toggleKey, fpUser, defaultValue).value).toStrictEqual(expectValue);
+          break;
+      }
+    }
+  }
 });
