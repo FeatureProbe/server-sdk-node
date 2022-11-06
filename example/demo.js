@@ -4,26 +4,21 @@ const pino = require('pino');
 const user = new featureProbe.FPUser().with('userId', '00001');
 const user2 = new featureProbe.FPUser().with('userId', '00003');
 
-const logToFile = pino.transport({
-  targets: [
-    {
-      level: 'info',
-      target: 'pino/file',
-      options: {
-        destination: './logs/info.log',
-        mkdir: true
-      }
-    },
-    {
-      level: 'debug',
-      target: 'pino/file',
-      options: {
-        destination: './logs/debug.log',
-        mkdir: true
-      }
-    }
-  ]
-});
+// save log to file
+// const logToFile = pino.transport({
+//   targets: [
+//     {
+//       level: 'info',
+//       target: 'pino/file',
+//       options: {
+//         destination: './logs/info.log',
+//         mkdir: true
+//       }
+//     }
+//   ]
+// });
+
+const logToFile = undefined;
 
 const fpClient = new featureProbe.FeatureProbe({
   remoteUrl: 'https://featureprobe.io/server',
@@ -34,7 +29,10 @@ const fpClient = new featureProbe.FeatureProbe({
 });
 
 const main = async () => {
-  await fpClient.start();
+  // wait until the repo has been initialized
+  // await fpClient.start();
+  // add time limit
+  await fpClient.start(1000);
   console.log('FeatureProbe evaluation boolean type toggle result is:', fpClient.booleanValue('campaign_allow_list', user, false));
   console.log('FeatureProbe evaluation boolean type toggle detail is:', fpClient.booleanDetail('campaign_allow_list', user, false));
   console.log();

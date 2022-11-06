@@ -19,7 +19,7 @@ test('init FeatureProbe client', async () => {
       refreshInterval: 1000
     });
   await fpClient.start();
-  expect(fpClient.repository.initialized).toBeTruthy();
+  expect(fpClient.initialized).toBeTruthy();
   fpClient.flush();
   await fpClient.close();
 });
@@ -37,8 +37,8 @@ test('close client', async () => {
     });
   await fpClient.start();
   await fpClient.close();
-  console.log(fpClient.repository.toggles);
-  expect(Object.keys(fpClient.repository.toggles)).toHaveLength(0);
+  console.log(( fpClient as any )._repository.toggles);
+  expect(Object.keys(( fpClient as any )._repository.toggles)).toHaveLength(0);
 });
 
 test('invalid sdk key', async () => {

@@ -48,9 +48,9 @@ export interface FPToggleDetail {
 
 export interface FPConfig {
   serverSdkKey: string;
-  refreshInterval?: number;
   remoteUrl?: URL | string;
   togglesUrl?: URL | string;
   eventsUrl?: URL | string;
+  refreshInterval?: number;
   logger?: pino.Logger;
 }

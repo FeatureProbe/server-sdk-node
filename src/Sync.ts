@@ -64,10 +64,10 @@ export class Synchronizer {
   }
 
   public async start(): Promise<void> {
-    await this.fetchRemoteRepo();
     this._logger?.info(`Starting FeatureProbe polling repository with interval ${this._refreshInterval} ms`);
     this.stop();
     this._timer = setInterval(() => this.fetchRemoteRepo(), this._refreshInterval);
+    return this.fetchRemoteRepo();
   }
 
   public stop() {

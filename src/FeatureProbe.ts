@@ -24,8 +24,8 @@ export class FeatureProbe {
 
   private readonly _logger: pino.Logger;
 
-  get repository() {
-    return this._repository;
+  get initialized(): boolean {
+    return this._repository.initialized;
   }
 
   /**
@@ -41,10 +41,10 @@ export class FeatureProbe {
    */
   constructor(
     {
+      serverSdkKey,
       remoteUrl,
       togglesUrl,
       eventsUrl,
-      serverSdkKey,
       refreshInterval = 1000,
       logger
     }: FPConfig) {
@@ -79,11 +79,29 @@ export class FeatureProbe {
   }
 
   /**
-   * Initializes the toggle repository, <b>should be awaited before evaluating features</b>.
+   * Initializes the toggle repository.
+   *
+   * @param startWait set time limit for initialization, if not set, this function won't be timeout
    */
-  public async start() {
-    await this._toggleSyncer.start();
-    this._logger.info('FeatureProbe client started');
+  public async start(startWait?: number) {
+    const promises: [Promise<void>] = [this._toggleSyncer.start()];
+    let timeoutHandle: NodeJS.Timeout | undefined;
+    if (startWait != null) {
+      promises.push(new Promise((resolve, reject) => {
+        timeoutHandle = setTimeout(
+          () => reject(new Error(`Failed to initialize repository in ${startWait} ms`)),
+          startWait
+        );
+      }));
+    }
+
+    const start = new Date().valueOf();
+    await Promise.race(promises)
+      .then(() => {
+        clearTimeout(timeoutHandle);
+        this._logger.info(`FeatureProbe client started, initialization cost ${new Date().valueOf() - start} ms`);
+      })
+      .catch(e => this._logger.error('FeatureProbe client failed to initialize', e));
   }
 
   /**
