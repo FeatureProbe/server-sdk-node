@@ -11,9 +11,11 @@ export class FPUser {
 
   /**
    * Creates a new FPUser.
+   *
+   * @param stableRollout sets user with a unique id for percentage rollout, by default, a timestamp will be assigned as the key
    */
-  constructor() {
-    this._key = Date.now().toString();
+  constructor(stableRollout?: string) {
+    this._key = stableRollout ?? Date.now().toString();
     this._attrs = {};
   }
 
