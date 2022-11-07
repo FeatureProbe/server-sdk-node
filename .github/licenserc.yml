@@ -10,5 +10,7 @@ header:
 
   paths-ignore:
     - '**/*.md'
+    - 'docs'
+    - 'dist'
 
   comment: on-failure

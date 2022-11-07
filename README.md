@@ -1,9 +1,9 @@
 # FeatureProbe Server Side SDK for Node.js
 
-[![Top Language](https://img.shields.io/github/languages/top/FeatureProbe/server-sdk-node)](https://github.com/FeatureProbe/server-sdk-node/search?l=rust)
-[![Coverage Status](https://coveralls.io/repos/github/FeatureProbe/server-sdk-node/badge.svg?branch=demo)](https://coveralls.io/github/FeatureProbe/server-sdk-node?branch=demo)
+[![Top Language](https://img.shields.io/github/languages/top/FeatureProbe/server-sdk-node)](https://github.com/FeatureProbe/server-sdk-node)
+[![Coverage Status](https://coveralls.io/repos/github/FeatureProbe/server-sdk-node/badge.svg?branch=main)](https://coveralls.io/github/FeatureProbe/server-sdk-node?branch=main)
 [![Github Star](https://img.shields.io/github/stars/FeatureProbe/server-sdk-node)](https://github.com/FeatureProbe/server-sdk-node/stargazers)
-[![Apache-2.0 license](https://img.shields.io/github/license/FeatureProbe/FeatureProbe)](https://github.com/FeatureProbe/FeatureProbe/blob/demo/LICENSE)
+[![Apache-2.0 license](https://img.shields.io/github/license/FeatureProbe/FeatureProbe)](https://github.com/FeatureProbe/FeatureProbe/blob/main/LICENSE)
 
 FeatureProbe is an open source feature management service. This SDK is used to control features in Node.js programs. This
 SDK is designed primarily for use in multi-user systems such as web servers and applications.

@@ -55,18 +55,63 @@ export interface FeatureProbe {
 }
 
 export interface FPToggleDetail {
+  /**
+   * Return value of a toggle for the current user.
+   */
   value: boolean | string | number | any;
+
+  /**
+   * The index of the matching rule.
+   */
   ruleIndex: number | null;
+
+  /**
+   * The index of the matching variation.
+   */
   variationIndex: number | null;
+
+  /**
+   * The version of the toggle.
+   */
   version: number | null;
+
+  /**
+   * The failed reason.
+   */
   reason: string | null;
 }
 
 export interface FPConfig {
+  /**
+   * The server SDK Key for authentication.
+   */
   serverSdkKey: string;
+
+  /**
+   * The unified URL to get toggles and post events.
+   */
   remoteUrl?: URL | string;
+
+  /**
+   * The specific URL to get toggles, once set, remoteUrl will be ignored.
+   */
   togglesUrl?: URL | string;
+
+  /**
+   * The specific URL to post events, once set, remoteUrl will be ignored.
+   */
   eventsUrl?: URL | string;
+
+  /**
+   * The SDK check for updated in millisecond.
+   */
   refreshInterval?: number;
+
+  /**
+   * Pino logger.
+   *
+   * If you want to use transport or advanced settings,
+   * please define one instance and pass to this param.
+   */
   logger?: pino.Logger;
 }
