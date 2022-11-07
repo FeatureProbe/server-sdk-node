@@ -16,3 +16,4 @@
 
 export { FeatureProbe } from './FeatureProbe';
 export { FPUser } from './FPUser';
+export { FPConfig, FPToggleDetail } from './type';
