@@ -41,7 +41,7 @@
     "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-typescript": "^8.3.2",
-    "@types/jest": "^29.0.0",
+    "@types/jest": "^27.0.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
@@ -60,7 +60,7 @@
     "rollup-plugin-serve": "^1.1.0",
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-typescript2": "^0.31.2",
-    "ts-jest": "^28.0.8",
+    "ts-jest": "^27.1.0",
     "typedoc": "^0.23.10",
     "typescript": "^4.7.4"
   },
