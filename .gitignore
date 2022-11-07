@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+typings
+
+# Logs
+logs
+*.log
+
+.vscode/
+.idea/
+
+coverage/
+
+dist/
