@@ -14,7 +14,7 @@ Reading the short [Introduction](https://docs.featureprobe.io/reference/sdk-intr
 
 ## How to Use This SDK
 
-See [SDK Doc](https://docs.featureprobe.io/how-to/Server-Side%20SDKs/node-sdk) for detail.  [中文](https://docs.featureprobe.io/zh-CN/how-to/Server-Side%20SDKs/node-sdk)
+See [SDK Doc](https://docs.featureprobe.io/how-to/Server-Side%20SDKs/node-sdk) for detail.  [中文](https://docs.featureprobe.io/zh-CN/how-to/Server-Side%20SDKs/node-sdk). For more information about SDK API, please reference [SDK API](https://featureprobe.github.io/server-sdk-node/).
 
 ## Contributing
 
