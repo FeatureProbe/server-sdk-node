@@ -166,7 +166,7 @@ export class Toggle {
     if (!this._enabled) {
       return this.disabledResult(user, this._key, defaultValue);
     }
-    let warning: string | undefined;
+    let warning: string | null | undefined;
     if (this._rules?.length > 0) {
       for (let i = 0; i < this._rules.length; i++) {
         const rule = this._rules[i];
@@ -183,13 +183,13 @@ export class Toggle {
   private hitValue(hitResult: IHitResult | undefined, defaultValue: any, ruleIndex?: number): FPToggleDetail {
     const res = {
       value: defaultValue,
-      ruleIndex: ruleIndex || null,
-      variationIndex: hitResult?.index || null,
+      ruleIndex: ruleIndex ?? null,
+      variationIndex: hitResult?.index ?? null,
       version: this._version,
       reason: hitResult?.reason || null
     } as FPToggleDetail;
 
-    if (hitResult?.index !== undefined) {
+    if (hitResult?.index != null) {
       res.value = this._variations[hitResult.index];
       if (ruleIndex !== undefined) {
         res.reason = `Rule ${ruleIndex} hit`;
@@ -204,9 +204,9 @@ export class Toggle {
     return disabledResult;
   }
 
-  private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string): FPToggleDetail {
+  private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string | null): FPToggleDetail {
     const defaultResult = this.hitValue(this._defaultServe?.evalIndex(user, toggleKey), defaultValue);
-    defaultResult.reason = `Default rule hit. ${warning ?? ''}`.trimEnd();
+    defaultResult.reason = `Default rule hit. ${warning || ''}`.trimEnd();
     return defaultResult;
   }
 }
