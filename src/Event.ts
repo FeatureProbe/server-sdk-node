@@ -79,9 +79,9 @@ export class EventRecorder {
   }
 
   constructor(serverSdkKey: string,
-              eventsUrl: URL | string,
-              flushInterval: number,
-              logger?: pino.Logger) {
+    eventsUrl: URL | string,
+    flushInterval: number,
+    logger?: pino.Logger) {
     this._serverSdkKey = serverSdkKey;
     this._eventsUrl = new URL(eventsUrl).toString();
     this._closed = false;
@@ -197,7 +197,7 @@ export class EventRecorder {
 // cred: https://stackoverflow.com/questions/47157428/how-to-implement-a-pseudo-blocking-async-queue-in-js-ts
 class AsyncBlockingQueue<T> {
   private _promises: Promise<T>[];
-  private _resolvers: ( (t: T) => void )[];
+  private _resolvers: ((t: T) => void)[];
 
   constructor() {
     this._resolvers = [];

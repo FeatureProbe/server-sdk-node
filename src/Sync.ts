@@ -68,10 +68,10 @@ export class Synchronizer {
   }
 
   constructor(serverSdkKey: string,
-              togglesUrl: URL | string,
-              refreshInterval: number,
-              repository: Repository,
-              logger?: pino.Logger) {
+    togglesUrl: URL | string,
+    refreshInterval: number,
+    repository: Repository,
+    logger?: pino.Logger) {
     this._serverSdkKey = serverSdkKey;
     this._togglesUrl = new URL(togglesUrl).toString();
     this._refreshInterval = refreshInterval;
@@ -82,8 +82,8 @@ export class Synchronizer {
   public async start(): Promise<void> {
     this._logger?.info(`Starting FeatureProbe polling repository with interval ${this._refreshInterval} ms`);
     this.stop();
-    this._timer = setInterval(() => this.fetchRemoteRepo(), this._refreshInterval);
-    return this.fetchRemoteRepo();
+    this._timer = setInterval(() => this.syncNow(), this._refreshInterval);
+    return this.syncNow();
   }
 
   public stop() {
@@ -94,7 +94,7 @@ export class Synchronizer {
     }
   }
 
-  private async fetchRemoteRepo(): Promise<void> {
+  public async syncNow(): Promise<void> {
     await fetch(this._togglesUrl, {
       method: 'GET',
       cache: 'no-cache',
