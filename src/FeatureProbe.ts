@@ -23,6 +23,7 @@ import { EventRecorder } from './Event';
 import { Synchronizer } from './Sync';
 import pino from 'pino';
 import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 /**
  * A client for the FeatureProbe API.
@@ -41,7 +42,7 @@ export class FeatureProbe {
   private readonly _repository: Repository;
 
   private readonly _logger: pino.Logger;
-  private _socket?: Socket<any, any>;
+  private _socket?: Socket<DefaultEventsMap, DefaultEventsMap>;
 
   get initialized(): boolean {
     return this._repository.initialized;
@@ -96,7 +97,6 @@ export class FeatureProbe {
     this._togglesUrl = new URL(togglesUrl ?? remoteUrl + '/api/server-sdk/toggles').toString();
     this._eventsUrl = new URL(eventsUrl ?? remoteUrl + '/api/events').toString();
     this._realtimeUrl = new URL(realtimeUrl ?? remoteUrl + '/realtime').toString();
-    io
     this._logger = logger ?? pino({ name: 'FeatureProbe' });
     this._repository = new Repository({});
     this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval, this._logger);
@@ -289,7 +289,7 @@ export class FeatureProbe {
       })()
     });
 
-    socket.on('econnect_error', (error: Error) => {
+    socket.on('connect_error', (error: Error) => {
       this._logger?.info(`socketio error ${error.message}`);
     })
 
