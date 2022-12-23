@@ -22,6 +22,8 @@ import { Repository } from './Evaluate';
 import { EventRecorder } from './Event';
 import { Synchronizer } from './Sync';
 import pino from 'pino';
+import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 /**
  * A client for the FeatureProbe API.
@@ -31,6 +33,7 @@ export class FeatureProbe {
   private readonly _remoteUrl: string;
   private readonly _togglesUrl: string;
   private readonly _eventsUrl: string;
+  private readonly _realtimeUrl: string;
   private readonly _serverSdkKey: string;
   private readonly _refreshInterval: number;
 
@@ -39,6 +42,7 @@ export class FeatureProbe {
   private readonly _repository: Repository;
 
   private readonly _logger: pino.Logger;
+  private _socket?: Socket<DefaultEventsMap, DefaultEventsMap>;
 
   get initialized(): boolean {
     return this._repository.initialized;
@@ -61,6 +65,7 @@ export class FeatureProbe {
       remoteUrl,
       togglesUrl,
       eventsUrl,
+      realtimeUrl,
       refreshInterval = 1000,
       logger
     }: FPConfig) {
@@ -77,6 +82,10 @@ export class FeatureProbe {
     if (!remoteUrl && !eventsUrl) {
       throw new Error('remoteUrl or eventsUrl is required');
     }
+    if (!remoteUrl && !realtimeUrl) {
+      throw new Error('remoteUrl or realtimeUrl is required');
+    }
+
     if (!remoteUrl && !togglesUrl && !eventsUrl) {
       throw new Error('remoteUrl is required');
     }
@@ -87,7 +96,7 @@ export class FeatureProbe {
     this._remoteUrl = new URL(remoteUrl ?? '').toString();
     this._togglesUrl = new URL(togglesUrl ?? remoteUrl + '/api/server-sdk/toggles').toString();
     this._eventsUrl = new URL(eventsUrl ?? remoteUrl + '/api/events').toString();
-
+    this._realtimeUrl = new URL(realtimeUrl ?? remoteUrl + '/realtime').toString();
     this._logger = logger ?? pino({ name: 'FeatureProbe' });
     this._repository = new Repository({});
     this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval, this._logger);
@@ -100,6 +109,7 @@ export class FeatureProbe {
    * @param startWait set time limit for initialization, if not set, this function won't be timeout
    */
   public async start(startWait?: number) {
+    this.connectSocket();
     const promises: [Promise<void>] = [this._toggleSyncer.start()];
     let timeoutHandle: NodeJS.Timeout | undefined;
     if (startWait != null) {
@@ -259,6 +269,31 @@ export class FeatureProbe {
         reason: `Value [${result.value.toString()}] type mismatch, target type: ${valueType}`
       } as FPToggleDetail;
     }
+  }
+
+  private async connectSocket() {
+    const url = new URL(this._realtimeUrl);
+
+    this._logger?.info('connect socket to ' + this._realtimeUrl + " " + url.pathname);
+    const socket = io(this._realtimeUrl, { transports: ["websocket"], path: url.pathname });
+
+    socket.on('connect', () => {
+      this._logger?.info('connect socketio success');
+      socket.emit('register', { key: this._serverSdkKey });
+    });
+
+    socket.on('update', () => {
+      this._logger?.info('socketio recv update event');
+      (async () => {
+        await this._toggleSyncer.syncNow()
+      })()
+    });
+
+    socket.on('connect_error', (error: Error) => {
+      this._logger?.info(`socketio error ${error.message}`);
+    })
+
+    this._socket = socket;
   }
 }
 

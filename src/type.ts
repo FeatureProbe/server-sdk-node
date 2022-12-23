@@ -93,14 +93,19 @@ export interface FPConfig {
   remoteUrl?: URL | string;
 
   /**
-   * The specific URL to get toggles, once set, remoteUrl will be ignored.
+   * The specific URL to get toggles
    */
   togglesUrl?: URL | string;
 
   /**
-   * The specific URL to post events, once set, remoteUrl will be ignored.
+   * The specific URL to post events
    */
   eventsUrl?: URL | string;
+
+  /**
+   * The specific URL to receive realtime event
+   */
+  realtimeUrl?: URL | string;
 
   /**
    * The SDK check for updated in millisecond.
