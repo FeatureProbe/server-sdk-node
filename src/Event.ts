@@ -95,7 +95,7 @@ export class EventRecorder {
     this._logger = logger;
   }
 
-  public record(event: IAccessEvent) {
+  public recordAccessEvent(event: IAccessEvent) {
     if (this._closed) {
       this._logger?.warn('Trying to push access record to a closed EventProcessor, omitted');
       return;
@@ -177,7 +177,7 @@ export class EventRecorder {
   }
 
   private async doFlush(): Promise<void> {
-    if (this._sendAccessQueue.length === 0 || this._sendEventQueue.length === 0) {
+    if (this._sendAccessQueue.length === 0 && this._sendEventQueue.length === 0) {
       return;
     }
     const events = Object.assign([], this._sendAccessQueue);

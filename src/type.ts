@@ -79,11 +79,6 @@ export interface FPToggleDetail {
    * The failed reason.
    */
   reason: string | null;
-
-  /**
-   * Enable to track access events or not.
-   */
-  trackAccessEvent: boolean;
 }
 
 export interface FPConfig {

@@ -22,8 +22,8 @@ import { Repository } from './Evaluate';
 import { EventRecorder } from './Event';
 import { Synchronizer } from './Sync';
 import pino from 'pino';
-import { io, Socket } from 'socket.io-client';
-import { DefaultEventsMap } from "@socket.io/component-emitter";
+import { io } from 'socket.io-client';
+// import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 /**
  * A client for the FeatureProbe API.
@@ -42,7 +42,7 @@ export class FeatureProbe {
   private readonly _repository: Repository;
 
   private readonly _logger: pino.Logger;
-  private _socket?: Socket<DefaultEventsMap, DefaultEventsMap>;
+  // private _socket?: Socket<DefaultEventsMap, DefaultEventsMap>;
 
   get initialized(): boolean {
     return this._repository.initialized;
@@ -265,7 +265,7 @@ export class FeatureProbe {
     const result = toggle.eval(user, segments, defaultValue);
 
     if (typeof result.value === valueType) {
-      this._eventRecorder.record({
+      this._eventRecorder.recordAccessEvent({
         time: Date.now(),
         key: key,
         value: result.value,
@@ -274,7 +274,7 @@ export class FeatureProbe {
         reason: result.reason
       });
 
-      if (result.trackAccessEvent) {
+      if (toggle.trackAccessEvents) {
         this._eventRecorder.recordTrackEvent({
           kind: 'access',
           key: key,
@@ -320,7 +320,7 @@ export class FeatureProbe {
       this._logger?.info(`socketio error ${error.message}`);
     })
 
-    this._socket = socket;
+    // this._socket = socket;
   }
 }
 

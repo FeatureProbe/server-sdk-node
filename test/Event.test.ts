@@ -25,7 +25,7 @@ test('flush event', async () => {
     { overwriteRoutes: true });
 
   const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
-  recorder.record({
+  recorder.recordAccessEvent({
     time: Date.now(),
     key: 'toggle key',
     value: 'eval value',
@@ -33,7 +33,7 @@ test('flush event', async () => {
     reason: 'default',
     index: -1
   });
-  recorder.record({
+  recorder.recordAccessEvent({
     time: Date.now(),
     key: 'toggle key',
     value: 'eval value',
@@ -44,10 +44,42 @@ test('flush event', async () => {
   recorder.flush();
   await new Promise(r => setTimeout(r, 2000));
 
-  console.log('---------------------');
-  console.log(JSON.parse(mockApi.lastOptions()?.body?.toString() ?? '[]'));
-  // expect(JSON.parse(mockApi.lastOptions()?.body?.toString() ?? '[]')[0].events)
-  //   .toHaveLength(2);
+  expect(JSON.parse(mockApi.lastOptions()?.body?.toString() ?? '[]')[0].access.counters['toggle key'])
+    .toHaveLength(2);
+});
+
+test('record track event', async () => {
+  const fakeEventUrl = 'https://test.featureprobe.io/api/events';
+  const mockApi = fetchMock.mock(fakeEventUrl,
+    { status: 200, body: '{' },
+    { overwriteRoutes: true });
+
+  const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
+  recorder.recordTrackEvent({
+    kind: 'access',
+    time: Date.now(),
+    key: 'toggle key1',
+    value: 'value1',
+    variationIndex: 1,
+    ruleIndex: 1,
+    version: 2,
+    user: '111'
+  });
+  recorder.recordTrackEvent({
+    kind: 'access',
+    time: Date.now(),
+    key: 'toggle key2',
+    value: 'value2',
+    variationIndex: 2,
+    ruleIndex: 1,
+    version: 1,
+    user: '222'
+  });
+  recorder.flush();
+  await new Promise(r => setTimeout(r, 2000));
+
+  expect(JSON.parse(mockApi.lastOptions()?.body?.toString() ?? '[]')[0].events)
+    .toHaveLength(2);
 });
 
 test('invalid url', async () => {
@@ -61,7 +93,7 @@ test('get snapshot', () => {
     { overwriteRoutes: true });
 
   const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
-  recorder.record({
+  recorder.recordAccessEvent({
     time: Date.now(),
     key: 'toggle key',
     value: 'eval value',
@@ -77,7 +109,7 @@ test('record after close', async () => {
 
   const recorder = new EventRecorder('sdk key', fakeEventUrl, 1000);
   await recorder.stop();
-  recorder.record({
+  recorder.recordAccessEvent({
     time: Date.now(),
     key: 'toggle key',
     value: 'eval value',

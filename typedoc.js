@@ -20,6 +20,6 @@ const PKG_VERSION = pkg.version;
 module.exports = {
   out: './docs',
   name: `FeatureProbe Server Side SDK for Node.js (${PKG_VERSION})`,
-  readme: 'README.md',
+  readme: 'none',
   entryPoints: ['./src/index.ts']
 };
