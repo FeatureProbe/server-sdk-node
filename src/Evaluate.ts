@@ -213,7 +213,6 @@ export class Toggle {
       variationIndex: hitResult?.index ?? null,
       version: this._version,
       reason: hitResult?.reason || null,
-      trackAccessEvent: this.trackAccessEvents
     } as FPToggleDetail;
 
     if (hitResult?.index != null) {
