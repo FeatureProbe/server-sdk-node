@@ -227,6 +227,19 @@ export class FeatureProbe {
     return this.toggleDetail(key, user, defaultValue, 'object');
   }
 
+  /**
+   * Record custom events, value is optional.
+   */
+  public track(name: string, user: FPUser, value?: unknown): void {
+    this._eventRecorder.recordTrackEvent({
+      kind: "custom",
+      name,
+      time: Date.now(),
+      value,
+      user: user.key,
+    });
+  }
+
   private toggleDetail(key: string, user: FPUser, defaultValue: any, valueType: ToggleValueType): FPToggleDetail {
     if (!this._repository.initialized) {
       return {
@@ -250,6 +263,7 @@ export class FeatureProbe {
 
     const segments = this._repository.segments;
     const result = toggle.eval(user, segments, defaultValue);
+
     if (typeof result.value === valueType) {
       this._eventRecorder.record({
         time: Date.now(),
@@ -259,6 +273,19 @@ export class FeatureProbe {
         version: result.version ?? 0,
         reason: result.reason
       });
+
+      if (result.trackAccessEvent) {
+        this._eventRecorder.recordTrackEvent({
+          kind: 'access',
+          key: key,
+          user: user.key,
+          value: result.value,
+          variationIndex: result.variationIndex ?? -1,
+          version: result.version ?? 0,
+          time: Date.now(),
+          ruleIndex: result.ruleIndex ?? null,
+        });
+      }
       return result;
     } else {
       return {

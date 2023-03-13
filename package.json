@@ -1,6 +1,6 @@
 {
   "name": "featureprobe-server-sdk-node",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "description": "FeatureProbe Server Side SDK for Node.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
