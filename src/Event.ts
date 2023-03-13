@@ -19,6 +19,7 @@
 import pino from 'pino';
 
 require('isomorphic-fetch');
+import { AccessEvent, CustomEvent } from './type';
 
 const pkg = require('../package.json');
 const UA = `Node/${pkg.version}`;
@@ -50,7 +51,8 @@ export class EventRecorder {
   private _eventsUrl: string;
 
   private _closed: boolean;
-  private _sendQueue: IAccessEvent[];
+  private _sendAccessQueue: IAccessEvent[];
+  private _sendEventQueue: (AccessEvent | CustomEvent)[];
   private _taskQueue: AsyncBlockingQueue<Promise<void>>;
   private _timer: NodeJS.Timer;
   private readonly _dispatch: Promise<void>;
@@ -85,19 +87,28 @@ export class EventRecorder {
     this._serverSdkKey = serverSdkKey;
     this._eventsUrl = new URL(eventsUrl).toString();
     this._closed = false;
-    this._sendQueue = [];
+    this._sendAccessQueue = [];
+    this._sendEventQueue = [];
     this._taskQueue = new AsyncBlockingQueue<Promise<void>>();
     this._timer = setInterval(() => this.flush(), flushInterval);
     this._dispatch = this.startDispatch();
     this._logger = logger;
   }
 
-  public record(event: IAccessEvent) {
+  public recordAccessEvent(event: IAccessEvent) {
     if (this._closed) {
       this._logger?.warn('Trying to push access record to a closed EventProcessor, omitted');
       return;
     }
-    this._sendQueue.push(event);
+    this._sendAccessQueue.push(event);
+  }
+
+  public recordTrackEvent(trackEvents: AccessEvent | CustomEvent): void {
+    if (this._closed) {
+      console.warn("Trying to push custom event record to a closed EventProcessor, omitted");
+      return;
+    }
+    this._sendEventQueue.push(trackEvents);
   }
 
   public flush() {
@@ -166,13 +177,17 @@ export class EventRecorder {
   }
 
   private async doFlush(): Promise<void> {
-    if (this._sendQueue.length === 0) {
+    if (this._sendAccessQueue.length === 0 && this._sendEventQueue.length === 0) {
       return;
     }
-    const events = Object.assign([], this._sendQueue);
-    this._sendQueue = [];
+    const events = Object.assign([], this._sendAccessQueue);
+    const trackEvents = Object.assign([], this._sendEventQueue);
+
+    this._sendAccessQueue = [];
+    this._sendEventQueue = [];
+
     const eventRepos = [{
-      events: events,
+      events: trackEvents,
       access: EventRecorder.prepareSendData(events)
     }];
 

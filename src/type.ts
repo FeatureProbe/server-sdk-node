@@ -120,3 +120,22 @@ export interface FPConfig {
    */
   logger?: pino.Logger;
 }
+
+export interface AccessEvent {
+  kind: string;
+  time: number;
+  key: string;
+  value: boolean | string | number | Record<string, unknown>;
+  variationIndex: number;
+  ruleIndex: number | null;
+  version: number;
+  user: string;
+}
+
+export interface CustomEvent {
+  kind: string;
+  name: string;
+  time: number;
+  value: unknown;
+  user: string;
+}

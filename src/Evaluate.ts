@@ -99,12 +99,14 @@ export class Toggle {
   private _defaultServe: Serve;
   private _rules: Rule[];
   private _variations: any[];
+  private _trackAccessEvents: boolean;
 
   constructor(json: any) {
     this._key = json.key;
     this._enabled = json.enabled || false;
     this._version = json.version || 1;
     this._forClient = json.forClient || false;
+    this._trackAccessEvents = json.trackAccessEvents || false;
     this._disabledServe = new Serve(json.disabledServe);
     this._defaultServe = new Serve(json.defaultServe);
     this._rules = [];
@@ -178,6 +180,14 @@ export class Toggle {
     this._variations = value;
   }
 
+  get trackAccessEvents(): boolean {
+    return this._trackAccessEvents;
+  }
+
+  set trackAccessEvents(value: boolean) {
+    this._trackAccessEvents = value;
+  }
+
   public eval(user: FPUser, segments: { [key: string]: Segment }, defaultValue: any): FPToggleDetail {
     if (!this._enabled) {
       return this.disabledResult(user, this._key, defaultValue);
@@ -202,7 +212,7 @@ export class Toggle {
       ruleIndex: ruleIndex ?? null,
       variationIndex: hitResult?.index ?? null,
       version: this._version,
-      reason: hitResult?.reason || null
+      reason: hitResult?.reason || null,
     } as FPToggleDetail;
 
     if (hitResult?.index != null) {
