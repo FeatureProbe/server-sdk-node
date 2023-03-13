@@ -52,7 +52,7 @@ export class EventRecorder {
 
   private _closed: boolean;
   private _sendAccessQueue: IAccessEvent[];
-  private _sendEventQueue: (AccessEvent | CustomEvent)[];;
+  private _sendEventQueue: (AccessEvent | CustomEvent)[];
   private _taskQueue: AsyncBlockingQueue<Promise<void>>;
   private _timer: NodeJS.Timer;
   private readonly _dispatch: Promise<void>;
