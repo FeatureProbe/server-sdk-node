@@ -40,6 +40,7 @@ export class FeatureProbe {
   private readonly _eventRecorder: EventRecorder;
   private readonly _toggleSyncer: Synchronizer;
   private readonly _repository: Repository;
+  private readonly _prerequisiteMaxDeep: number;
 
   private readonly _logger: pino.Logger;
   // private _socket?: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -67,6 +68,7 @@ export class FeatureProbe {
       eventsUrl,
       realtimeUrl,
       refreshInterval = 1000,
+      prerequisiteMaxDeep = 20,
       logger
     }: FPConfig) {
     if (!serverSdkKey) {
@@ -101,6 +103,7 @@ export class FeatureProbe {
     this._repository = new Repository({});
     this._eventRecorder = new EventRecorder(this._serverSdkKey, this._eventsUrl, this._refreshInterval, this._logger);
     this._toggleSyncer = new Synchronizer(this._serverSdkKey, this._togglesUrl, this._refreshInterval, this._repository, this._logger);
+    this._prerequisiteMaxDeep = prerequisiteMaxDeep;
   }
 
   /**
@@ -247,7 +250,7 @@ export class FeatureProbe {
         ruleIndex: null,
         variationIndex: null,
         version: null,
-        reason: 'FeatureProbe repository not initialized'
+        reason: 'not initialized'
       } as FPToggleDetail;
     }
     const toggle = this._repository.getToggle(key);
@@ -257,12 +260,13 @@ export class FeatureProbe {
         ruleIndex: null,
         variationIndex: null,
         version: null,
-        reason: `Toggle '${key}' not exist`
+        reason: `toggle '${key}' not exist.`
       } as FPToggleDetail;
     }
 
     const segments = this._repository.segments;
-    const result = toggle.eval(user, segments, defaultValue);
+    const toggles = this._repository.toggles;
+    const result = toggle.eval(user, toggles, segments, defaultValue, this._prerequisiteMaxDeep);
 
     if (typeof result.value === valueType) {
       this._eventRecorder.recordAccessEvent({
@@ -293,7 +297,7 @@ export class FeatureProbe {
         ruleIndex: null,
         variationIndex: null,
         version: null,
-        reason: `Value [${result.value.toString()}] type mismatch, target type: ${valueType}`
+        reason: "value type mismatch."
       } as FPToggleDetail;
     }
   }
