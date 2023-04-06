@@ -194,7 +194,7 @@ export class Toggle {
     try {
       return this.doEval(user, toggles, segments, defaultValue, maxDeep);
     } catch (e) {
-      return this.defaultResult(user, this._key, defaultValue, '' + e + '.');
+      return this.defaultResult(user, this._key, defaultValue, e + '.');
     }
   }
 
