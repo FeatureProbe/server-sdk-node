@@ -220,19 +220,19 @@ export class Toggle {
   }
 
   private tryPrerequisite(user: FPUser, toggles: { [key: string]: Toggle }, segments: { [key: string]: Segment }, deep: number) {
-    if (deep == 0) {
-        throw 'prerequisite deep overflow';
+    if (deep === 0) {
+      throw 'prerequisite deep overflow';
     }
 
     for (const pre of this._prerequisites) {
       const toggle = toggles[pre.key];
       if (toggle === undefined) {
-        throw 'prerequisite not exist: ' + pre.key
+        throw 'prerequisite not exist: ' + pre.key;
       }
 
-      const detail = toggle.doEval(user, toggles, segments, null, deep -1)
-      if (detail.value != pre.value) {
-        throw 'prerequisite not match: ' + pre.key
+      const detail = toggle.doEval(user, toggles, segments, null, deep - 1);
+      if (detail.value !== pre.value) {
+        throw 'prerequisite not match: ' + pre.key;
       }
     }
   }

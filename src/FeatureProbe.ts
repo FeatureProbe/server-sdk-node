@@ -235,7 +235,7 @@ export class FeatureProbe {
    */
   public track(name: string, user: FPUser, value?: unknown): void {
     this._eventRecorder.recordTrackEvent({
-      kind: "custom",
+      kind: 'custom',
       name,
       time: Date.now(),
       value,
@@ -297,7 +297,7 @@ export class FeatureProbe {
         ruleIndex: null,
         variationIndex: null,
         version: null,
-        reason: "value type mismatch."
+        reason: 'value type mismatch.'
       } as FPToggleDetail;
     }
   }
@@ -305,8 +305,8 @@ export class FeatureProbe {
   private async connectSocket() {
     const url = new URL(this._realtimeUrl);
 
-    this._logger?.info('connect socket to ' + this._realtimeUrl + " " + url.pathname);
-    const socket = io(this._realtimeUrl, { transports: ["websocket"], path: url.pathname });
+    this._logger?.info('connect socket to ' + this._realtimeUrl + ' ' + url.pathname);
+    const socket = io(this._realtimeUrl, { transports: ['websocket'], path: url.pathname });
 
     socket.on('connect', () => {
       this._logger?.info('connect socketio success');
