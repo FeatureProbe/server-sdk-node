@@ -113,6 +113,11 @@ export interface FPConfig {
   refreshInterval?: number;
 
   /**
+   * The max deep of prerequisite toggles
+   */
+  prerequisiteMaxDeep ?: number;
+
+  /**
    * Pino logger.
    *
    * If you want to use transport or advanced settings,

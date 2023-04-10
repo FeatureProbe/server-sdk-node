@@ -100,6 +100,7 @@ export class Toggle {
   private _rules: Rule[];
   private _variations: any[];
   private _trackAccessEvents: boolean;
+  private _prerequisites: Prerequisite[]
 
   constructor(json: any) {
     this._key = json.key;
@@ -114,6 +115,7 @@ export class Toggle {
       this._rules.push(new Rule(r));
     }
     this._variations = json.variations || [];
+    this._prerequisites = json.prerequisites || [];
   }
 
   get key(): string {
@@ -188,10 +190,21 @@ export class Toggle {
     this._trackAccessEvents = value;
   }
 
-  public eval(user: FPUser, segments: { [key: string]: Segment }, defaultValue: any): FPToggleDetail {
+  public eval(user: FPUser, toggles: { [key: string]: Toggle }, segments: { [key: string]: Segment }, defaultValue: any, maxDeep: number = 20): FPToggleDetail {
+    try {
+      return this.doEval(user, toggles, segments, defaultValue, maxDeep);
+    } catch (e) {
+      return this.defaultResult(user, this._key, defaultValue, e + '.');
+    }
+  }
+
+  private doEval(user: FPUser, toggles: { [key: string]: Toggle }, segments: { [key: string]: Segment }, defaultValue: any, deep: number): FPToggleDetail {
     if (!this._enabled) {
       return this.disabledResult(user, this._key, defaultValue);
     }
+
+    this.tryPrerequisite(user, toggles, segments, deep);
+
     let warning: string | null | undefined;
     if (this._rules?.length > 0) {
       for (let i = 0; i < this._rules.length; i++) {
@@ -206,6 +219,24 @@ export class Toggle {
     return this.defaultResult(user, this._key, defaultValue, warning);
   }
 
+  private tryPrerequisite(user: FPUser, toggles: { [key: string]: Toggle }, segments: { [key: string]: Segment }, deep: number) {
+    if (deep === 0) {
+      throw 'prerequisite deep overflow';
+    }
+
+    for (const pre of this._prerequisites) {
+      const toggle = toggles[pre.key];
+      if (toggle === undefined) {
+        throw 'prerequisite not exist: ' + pre.key;
+      }
+
+      const detail = toggle.doEval(user, toggles, segments, null, deep - 1);
+      if (detail.value !== pre.value) {
+        throw 'prerequisite not match: ' + pre.key;
+      }
+    }
+  }
+
   private hitValue(hitResult: IHitResult | undefined, defaultValue: any, ruleIndex?: number): FPToggleDetail {
     const res = {
       value: defaultValue,
@@ -218,7 +249,7 @@ export class Toggle {
     if (hitResult?.index != null) {
       res.value = this._variations[hitResult.index];
       if (ruleIndex !== undefined) {
-        res.reason = `Rule ${ruleIndex} hit`;
+        res.reason = `rule ${ruleIndex}`;
       }
     }
     return res;
@@ -226,13 +257,13 @@ export class Toggle {
 
   private disabledResult(user: FPUser, toggleKey: string, defaultValue: any): FPToggleDetail {
     const disabledResult = this.hitValue(this._disabledServe?.evalIndex(user, toggleKey), defaultValue);
-    disabledResult.reason = 'Toggle disabled';
+    disabledResult.reason = 'disabled.';
     return disabledResult;
   }
 
   private defaultResult(user: FPUser, toggleKey: string, defaultValue: any, warning?: string | null): FPToggleDetail {
     const defaultResult = this.hitValue(this._defaultServe?.evalIndex(user, toggleKey), defaultValue);
-    defaultResult.reason = `Default rule hit. ${warning || ''}`.trimEnd();
+    defaultResult.reason = `default. ${warning || ''}`.trimEnd();
     return defaultResult;
   }
 }
@@ -368,7 +399,7 @@ class Rule {
         && user.getAttr(condition.subject) === undefined) {
         return {
           hit: false,
-          reason: `Warning: User with key '${user.key}' does not have attribute name '${condition.subject}'`
+          reason: `warning: user with key '${user.key}' does not have attribute name '${condition.subject}'`
         } as IHitResult;
       }
       if (!condition.meet(user, segments)) {
@@ -609,6 +640,25 @@ export class Condition {
       return false;
     }
   }
+}
+
+class Prerequisite {
+  private _key: string;
+  private _value: any;
+
+  constructor(json: any) {
+    this._key = json.key;
+    this._value = json.value;
+  }
+
+  public get key() : string {
+    return this._key;
+  }
+
+  public get value(): any {
+    return this._value;
+  }
+
 }
 
 export interface IHitResult {

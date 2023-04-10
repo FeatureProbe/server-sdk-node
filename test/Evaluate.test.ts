@@ -26,22 +26,22 @@ test('salt hash', () => {
 test('[is in] segment condition match', () => {
   const toggle = repo.toggles['json_toggle'];
   const user = new FPUser().with('city', '4');
-  const detail = toggle.eval(user, repo.segments, {});
+  const detail = toggle.eval(user, repo.toggles, repo.segments, {});
   expect(detail.value['variation_1']).toBe('v2');
 });
 
 test('[is not in] segment condition match', () => {
   const user = new FPUser().with('city', '100');
   const toggle = repo.toggles['not_in_segment'];
-  const detail = toggle.eval(user, repo.segments, {});
+  const detail = toggle.eval(user, repo.toggles, repo.segments, {});
   expect(detail.value['not_in']).toBe(true);
 });
 
 test('not match in segment condition', () => {
   const user = new FPUser().with('city', '100');
   const toggle = repo.toggles['json_toggle'];
-  const detail = toggle.eval(user, repo.segments, {});
-  expect(detail.reason).toBe('Default rule hit.');
+  const detail = toggle.eval(user, repo.toggles, repo.segments, {});
+  expect(detail.reason).toBe('default.');
 });
 
 test('no segments', () => {
@@ -77,20 +77,20 @@ test('multiple conditions', () => {
 
   user = new FPUser().stableRollout('key')
     .with('city', '1');
-  detail = toggle.eval(user, repo.segments, null);
-  expect(detail.reason).toBe('Default rule hit. Warning: User with key \'key\' does not have attribute name \'os\'');
+  detail = toggle.eval(user, repo.toggles, repo.segments, null);
+  expect(detail.reason).toBe('default. warning: user with key \'key\' does not have attribute name \'os\'');
 
   user = new FPUser().stableRollout('key')
     .with('os', 'linux');
-  detail = toggle.eval(user, repo.segments, null);
-  expect(detail.reason).toBe('Default rule hit. Warning: User with key \'key\' does not have attribute name \'city\'');
+  detail = toggle.eval(user, repo.toggles, repo.segments, null);
+  expect(detail.reason).toBe('default. warning: user with key \'key\' does not have attribute name \'city\'');
 });
 
 test('toggle disabled', () => {
   const toggle = repo.toggles['disabled_toggle'];
   const user = new FPUser().with('city', '100');
-  const detail = toggle.eval(user, repo.segments, null);
-  expect(detail.reason).toBe('Toggle disabled');
+  const detail = toggle.eval(user, repo.toggles, repo.segments, null);
+  expect(detail.reason).toBe('disabled.');
 });
 
 test('[is one of] string condition match', () => {
