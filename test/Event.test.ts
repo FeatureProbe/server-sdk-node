@@ -17,6 +17,7 @@
 import fetchMock from 'fetch-mock';
 
 import { EventRecorder } from '../src/Event';
+import { FPUser } from '../src/FPUser';
 
 test('flush event', async () => {
   const fakeEventUrl = 'https://test.featureprobe.io/api/events';
@@ -63,7 +64,8 @@ test('record track event', async () => {
     variationIndex: 1,
     ruleIndex: 1,
     version: 2,
-    user: '111'
+    user: '111',
+    userDetail: new FPUser(),
   });
   recorder.recordTrackEvent({
     kind: 'access',
@@ -73,7 +75,8 @@ test('record track event', async () => {
     variationIndex: 2,
     ruleIndex: 1,
     version: 1,
-    user: '222'
+    user: '222',
+    userDetail: new FPUser(),
   });
   recorder.flush();
   await new Promise(r => setTimeout(r, 2000));
