@@ -65,7 +65,6 @@ test('record track event', async () => {
     ruleIndex: 1,
     version: 2,
     user: '111',
-    userDetail: new FPUser(),
   });
   recorder.recordTrackEvent({
     kind: 'access',
@@ -76,7 +75,6 @@ test('record track event', async () => {
     ruleIndex: 1,
     version: 1,
     user: '222',
-    userDetail: new FPUser(),
   });
   recorder.flush();
   await new Promise(r => setTimeout(r, 2000));

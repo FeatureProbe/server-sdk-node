@@ -101,7 +101,7 @@ export class Toggle {
   private _variations: any[];
   private _trackAccessEvents: boolean;
   private _prerequisites: Prerequisite[]
-  private _trackDebugUntilDate: number;
+  private _debugUntilTime: number;
 
   constructor(json: any) {
     this._key = json.key;
@@ -117,7 +117,7 @@ export class Toggle {
     }
     this._variations = json.variations || [];
     this._prerequisites = json.prerequisites || [];
-    this._trackDebugUntilDate = json.trackDebugUntilDate || 0;
+    this._debugUntilTime = json.debugUntilTime || 0;
   }
 
   get key(): string {
@@ -192,12 +192,12 @@ export class Toggle {
     this._trackAccessEvents = value;
   }
 
-  get trackDebugUntilDate(): number {
-    return this._trackDebugUntilDate;
+  get debugUntilTime(): number {
+    return this._debugUntilTime;
   }
 
-  set trackDebugUntilDate(value: number) {
-    this._trackDebugUntilDate = value;
+  set debugUntilTime(value: number) {
+    this._debugUntilTime = value;
   }
 
   public eval(user: FPUser, toggles: { [key: string]: Toggle }, segments: { [key: string]: Segment }, defaultValue: any, maxDeep: number = 20): FPToggleDetail {

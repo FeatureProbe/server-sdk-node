@@ -240,7 +240,6 @@ export class FeatureProbe {
       time: Date.now(),
       value,
       user: user.key,
-      userDetail: user,
     });
   }
 
@@ -286,7 +285,6 @@ export class FeatureProbe {
           kind: 'access',
           key: key,
           user: user.key,
-          userDetail: user,
           value: result.value,
           variationIndex: result.variationIndex ?? -1,
           version: result.version ?? 0,
@@ -295,7 +293,7 @@ export class FeatureProbe {
         });
       }
 
-      if (timestamp <= toggle.trackDebugUntilDate) {
+      if (timestamp <= toggle.debugUntilTime) {
         this._eventRecorder.recordTrackEvent({
           kind: 'debug',
           key: key,
