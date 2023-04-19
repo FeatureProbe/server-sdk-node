@@ -135,6 +135,7 @@ export interface AccessEvent {
   ruleIndex: number | null;
   version: number;
   user: string;
+  userDetail: FPUser;
 }
 
 export interface CustomEvent {
@@ -143,4 +144,5 @@ export interface CustomEvent {
   time: number;
   value: unknown;
   user: string;
+  userDetail: FPUser;
 }

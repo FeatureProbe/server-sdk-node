@@ -240,6 +240,7 @@ export class FeatureProbe {
       time: Date.now(),
       value,
       user: user.key,
+      userDetail: user,
     });
   }
 
@@ -269,8 +270,10 @@ export class FeatureProbe {
     const result = toggle.eval(user, toggles, segments, defaultValue, this._prerequisiteMaxDeep);
 
     if (typeof result.value === valueType) {
+      const timestamp = Date.now();
+
       this._eventRecorder.recordAccessEvent({
-        time: Date.now(),
+        time: timestamp,
         key: key,
         value: result.value,
         index: result.variationIndex ?? -1,
@@ -283,13 +286,29 @@ export class FeatureProbe {
           kind: 'access',
           key: key,
           user: user.key,
+          userDetail: user,
           value: result.value,
           variationIndex: result.variationIndex ?? -1,
           version: result.version ?? 0,
-          time: Date.now(),
+          time: timestamp,
           ruleIndex: result.ruleIndex ?? null,
         });
       }
+
+      if (timestamp <= toggle.trackDebugUntilDate) {
+        this._eventRecorder.recordTrackEvent({
+          kind: 'debug',
+          key: key,
+          user: user.key,
+          userDetail: user,
+          value: result.value,
+          variationIndex: result.variationIndex ?? -1,
+          version: result.version ?? 0,
+          time: timestamp,
+          ruleIndex: result.ruleIndex ?? null,
+        });
+      }
+
       return result;
     } else {
       return {
