@@ -17,7 +17,6 @@
 import fetchMock from 'fetch-mock';
 
 import { EventRecorder } from '../src/Event';
-import { FPUser } from '../src/FPUser';
 
 test('flush event', async () => {
   const fakeEventUrl = 'https://test.featureprobe.io/api/events';
