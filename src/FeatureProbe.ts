@@ -293,7 +293,7 @@ export class FeatureProbe {
         });
       }
 
-      if (timestamp <= toggle.debugUntilTime) {
+      if (timestamp <= this._repository.debugUntilTime) {
         this._eventRecorder.recordTrackEvent({
           kind: 'debug',
           key: key,
