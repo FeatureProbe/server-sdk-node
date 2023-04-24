@@ -144,3 +144,7 @@ export interface CustomEvent {
   value: unknown;
   user: string;
 }
+
+export interface DebugEvent extends AccessEvent {
+  userDetail: FPUser;
+}

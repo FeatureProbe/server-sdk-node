@@ -19,7 +19,7 @@
 import pino from 'pino';
 
 require('isomorphic-fetch');
-import { AccessEvent, CustomEvent } from './type';
+import { AccessEvent, CustomEvent, DebugEvent } from './type';
 
 const pkg = require('../package.json');
 const UA = `Node/${pkg.version}`;
@@ -103,7 +103,7 @@ export class EventRecorder {
     this._sendAccessQueue.push(event);
   }
 
-  public recordTrackEvent(trackEvents: AccessEvent | CustomEvent): void {
+  public recordTrackEvent(trackEvents: AccessEvent | CustomEvent | DebugEvent): void {
     if (this._closed) {
       console.warn("Trying to push custom event record to a closed EventProcessor, omitted");
       return;

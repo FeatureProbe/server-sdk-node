@@ -23,6 +23,17 @@ const unInitPrompt = 'not initialized';
 
 const scenarios = require('./fixtures/spec/spec/toggle_simple_spec.json');
 
+let originalConsole: () => void;
+
+beforeEach(() => {
+  originalConsole = console.log;
+  console.log = jest.fn();
+});
+
+afterEach(() => {
+  console.log = originalConsole;
+});
+
 test('init FeatureProbe client', async () => {
   fetchMock.mock('https://test.featureprobe.io/api/server-sdk/toggles',
     JSON.stringify(repoJson),

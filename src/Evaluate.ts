@@ -33,9 +33,9 @@ const Defaults = {
 export class Repository {
   private _toggles: { [key: string]: Toggle };
   private _segments: { [key: string]: Segment };
-
   private _initialized = false;
   private _updatedTimestamp = 0;
+  private _debugUntilTime = 0;
 
   constructor(json: any) {
     this._toggles = {};
@@ -46,6 +46,7 @@ export class Repository {
     for (const sk in json.segments || {}) {
       this._segments[sk] = new Segment(json.segments[sk]);
     }
+    this._debugUntilTime = json.debugUntilTime ?? 0;
   }
 
   get toggles(): { [key: string]: Toggle } {
@@ -80,6 +81,14 @@ export class Repository {
     this._updatedTimestamp = value;
   }
 
+  get debugUntilTime(): number {
+    return this._debugUntilTime;
+  }
+
+  set debugUntilTime(value: number) {
+    this._debugUntilTime = value;
+  }
+
   public getToggle(key: string): Toggle | undefined {
     return this._toggles[key];
   }
@@ -87,6 +96,7 @@ export class Repository {
   public clear() {
     this._toggles = {};
     this._segments = {};
+    this._debugUntilTime = 0;
   }
 }
 

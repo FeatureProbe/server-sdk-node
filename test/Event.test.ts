@@ -63,7 +63,7 @@ test('record track event', async () => {
     variationIndex: 1,
     ruleIndex: 1,
     version: 2,
-    user: '111'
+    user: '111',
   });
   recorder.recordTrackEvent({
     kind: 'access',
@@ -73,7 +73,7 @@ test('record track event', async () => {
     variationIndex: 2,
     ruleIndex: 1,
     version: 1,
-    user: '222'
+    user: '222',
   });
   recorder.flush();
   await new Promise(r => setTimeout(r, 2000));
