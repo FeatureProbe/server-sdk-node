@@ -10,11 +10,11 @@ SDK is designed primarily for use in multi-user systems such as web servers and 
 
 ## Basic Terms
 
-Reading the short [Introduction](https://docs.featureprobe.io/reference/sdk-introduction) will help to understand the code blow more easily.  [中文](https://docs.featureprobe.io/zh-CN/reference/sdk-introduction)
+Reading the short [Introduction](https://docs.featureprobe.com/reference/sdk-introduction) will help to understand the code blow more easily.  [中文](https://docs.featureprobe.com/zh-CN/reference/sdk-introduction)
 
 ## How to Use This SDK
 
-See [SDK Doc](https://docs.featureprobe.io/how-to/Server-Side%20SDKs/node-sdk) for detail.  [中文](https://docs.featureprobe.io/zh-CN/how-to/Server-Side%20SDKs/node-sdk). For more information about SDK API, please reference [SDK API](https://featureprobe.github.io/server-sdk-node/).
+See [SDK Doc](https://docs.featureprobe.com/how-to/Server-Side%20SDKs/node-sdk) for detail.  [中文](https://docs.featureprobe.com/zh-CN/how-to/Server-Side%20SDKs/node-sdk). For more information about SDK API, please reference [SDK API](https://featureprobe.github.io/server-sdk-node/).
 
 ## Contributing
 
